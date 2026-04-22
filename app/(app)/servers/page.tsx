@@ -80,10 +80,8 @@ export default function ServersPage() {
            <p className="text-[var(--neu-text-muted)]">Управление серверами и инстансами базы данных</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button className="neu-button neu-button-accent px-6 py-3 shrink-0">
-               <Plus className="w-4 h-4 mr-2"/> {t('create_server')}
-            </button>
+          <DialogTrigger className="neu-button neu-button-accent px-6 py-3 shrink-0 flex items-center justify-center font-semibold text-sm">
+             <Plus className="w-4 h-4 mr-2"/> {t('create_server')}
           </DialogTrigger>
           <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
             <DialogHeader><DialogTitle className="text-2xl font-bold">{t('create_server')}</DialogTitle></DialogHeader>

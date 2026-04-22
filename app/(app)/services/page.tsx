@@ -79,10 +79,8 @@ export default function ServicesPage() {
            <p className="text-[var(--neu-text-muted)]">Управление сервисами, сайтами и приложениями</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button className="neu-button neu-button-accent px-6 py-3 shrink-0">
-               <Plus className="w-4 h-4 mr-2"/> Добавить сервис
-            </button>
+          <DialogTrigger className="neu-button neu-button-accent px-6 py-3 shrink-0 flex items-center font-semibold text-sm">
+             <Plus className="w-4 h-4 mr-2"/> Добавить сервис
           </DialogTrigger>
           <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
             <DialogHeader><DialogTitle className="text-2xl font-bold">Добавить сервис</DialogTitle></DialogHeader>
