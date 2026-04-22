@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { collection, query, where, getCountFromServer, getDocs, orderBy, limit } from "firebase/firestore";
 import { db, useAuth } from "@/lib/providers";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FolderKanban, Server, Network, KeyRound } from "lucide-react";
+import { FolderKanban, Server, Network, KeyRound, Lock, MousePointer2, Users, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,7 +41,6 @@ export default function DashboardPage() {
           credentials: cSnap.data().count
         });
 
-        // Load recents
         const pRecentQ = query(collection(db, "projects"), where("ownerId", "==", user!.uid), orderBy("createdAt", "desc"), limit(5));
         const sRecentQ = query(collection(db, "servers"), where("ownerId", "==", user!.uid), orderBy("createdAt", "desc"), limit(5));
 
@@ -60,102 +58,126 @@ export default function DashboardPage() {
     loadDashboard();
   }, [user]);
 
-  if (loading) return <div className="p-4">{t('loading')}</div>;
+  if (loading) return <div className="p-4 opacity-50">{t('loading')}</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard')}</h1>
-        <p className="text-muted-foreground">{t('system_overview')}</p>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Дашборд</h1>
+        <p className="text-[var(--neu-text-muted)]">Обзор IT-инфраструктуры</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('active_projects')}</CardTitle>
-            <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.projects}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('total_servers')}</CardTitle>
-            <Server className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.servers}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('total_services')}</CardTitle>
-            <Network className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.services}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('stored_credentials')}</CardTitle>
-            <KeyRound className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.credentials}</div>
-          </CardContent>
-        </Card>
+      {/* Hero Banner */}
+      <div className="neu-panel relative overflow-hidden pl-6 pr-8 py-8 lg:p-10">
+        <div className="absolute left-0 top-6 bottom-6 w-1 rounded-r-full bg-[var(--neu-accent)]"></div>
+        <h2 className="text-xl lg:text-2xl font-bold mb-6">
+          IT-Box — Единый сейф для всей вашей инфраструктуры
+        </h2>
+        <div className="space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="neu-panel-inset p-2 rounded-full text-[var(--neu-accent)] shrink-0">
+               <Lock className="w-5 h-5" />
+            </div>
+            <p className="text-[var(--neu-text-muted)] pt-1 lg:text-lg">Прекратите искать доступы в чатах и таблицах.</p>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="neu-panel-inset p-2 rounded-full text-[var(--neu-accent)] shrink-0">
+               <MousePointer2 className="w-5 h-5" />
+            </div>
+            <p className="text-[var(--neu-text-muted)] pt-1 lg:text-lg">Контролируйте, кто и к чему имеет доступ, в один клик.</p>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="neu-panel-inset p-2 rounded-full text-[var(--neu-accent)] shrink-0">
+               <Users className="w-5 h-5" />
+            </div>
+            <p className="text-[var(--neu-text-muted)] pt-1 lg:text-lg">От фрилансера до корпорации.</p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>{t('recent_projects')}</CardTitle>
-            <CardDescription>{t('system_overview')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-             <div className="space-y-4">
-               {recentProjects.length === 0 ? <p className="text-sm text-muted-foreground">{t('no_data')}</p> : null}
-               {recentProjects.map((p) => (
-                 <div key={p.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                    <div>
-                      <p className="text-sm font-medium leading-none mb-1"><Link href={"/projects"} className="hover:underline">{p.name}</Link></p>
-                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">{p.description || "No description"}</p>
-                    </div>
-                    <div>
-                      <Badge variant={p.status === "active" ? "default" : "secondary"}>{p.status}</Badge>
-                    </div>
-                 </div>
-               ))}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+        <div className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
+           <div className="flex justify-between items-start">
+             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase w-2/3">АКТИВНЫХ ПРОЕКТОВ</span>
+             <div className="neu-panel-inset p-2.5 rounded-full text-blue-400">
+               <FolderKanban className="w-5 h-5" />
              </div>
-          </CardContent>
-        </Card>
+           </div>
+           <div>
+             <div className="text-5xl font-bold mb-4">{stats.projects}</div>
+             <Link href="/projects" className="text-blue-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">Все <ArrowRight className="w-4 h-4" /></Link>
+           </div>
+        </div>
 
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t('recent_servers')}</CardTitle>
-            <CardDescription>{t('system_overview')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-             <div className="space-y-4">
-               {recentServers.length === 0 ? <p className="text-sm text-muted-foreground">{t('no_data')}</p> : null}
-               {recentServers.map((s) => (
-                 <div key={s.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                    <div>
-                      <p className="text-sm font-medium leading-none mb-1"><Link href={"/servers"} className="hover:underline">{s.name}</Link></p>
-                      <p className="text-sm text-muted-foreground">{s.ipAddress}</p>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-xs text-muted-foreground">{s.os}</p>
-                    </div>
-                 </div>
-               ))}
+        <div className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
+           <div className="flex justify-between items-start">
+             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">СЕРВЕРЫ</span>
+             <div className="neu-panel-inset p-2.5 rounded-full text-purple-400">
+               <Server className="w-5 h-5" />
              </div>
-          </CardContent>
-        </Card>
+           </div>
+           <div>
+             <div className="text-5xl font-bold mb-4">{stats.servers}</div>
+             <Link href="/servers" className="text-purple-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">Все <ArrowRight className="w-4 h-4" /></Link>
+           </div>
+        </div>
+
+        <div className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
+           <div className="flex justify-between items-start">
+             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">СЕРВИСЫ</span>
+             <div className="neu-panel-inset p-2.5 rounded-full text-amber-500">
+               <Network className="w-5 h-5" />
+             </div>
+           </div>
+           <div>
+             <div className="text-5xl font-bold mb-4">{stats.services}</div>
+             <Link href="/services" className="text-amber-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">Все <ArrowRight className="w-4 h-4" /></Link>
+           </div>
+        </div>
+
+        <div className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
+           <div className="flex justify-between items-start">
+             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">ДОСТУПЫ</span>
+             <div className="neu-panel-inset p-2.5 rounded-full text-rose-500">
+               <KeyRound className="w-5 h-5" />
+             </div>
+           </div>
+           <div>
+             <div className="text-5xl font-bold mb-4">{stats.credentials}</div>
+             <Link href="/credentials" className="text-rose-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">Все <ArrowRight className="w-4 h-4" /></Link>
+           </div>
+        </div>
       </div>
 
+      {/* Recents */}
+      <div className="grid lg:grid-cols-2 gap-8">
+        <div className="neu-panel p-6 md:p-8">
+           <h3 className="text-xl font-bold mb-6">Последние проекты</h3>
+           <div className="space-y-6">
+             {recentProjects.length === 0 ? <p className="text-sm opacity-50">Нет данных</p> : null}
+             {recentProjects.map((p) => (
+               <div key={p.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                  <Link href={"/projects"} className="text-lg font-medium hover:text-[var(--neu-accent)] transition-colors">{p.name}</Link>
+                  <p className="text-[var(--neu-text-muted)] text-sm mt-1 truncate">{p.description || "Без описания"}</p>
+               </div>
+             ))}
+           </div>
+        </div>
+
+        <div className="neu-panel p-6 md:p-8">
+           <h3 className="text-xl font-bold mb-6">Последние серверы</h3>
+           <div className="space-y-6">
+             {recentServers.length === 0 ? <p className="text-sm opacity-50">Нет данных</p> : null}
+             {recentServers.map((s) => (
+               <div key={s.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                  <Link href={"/servers"} className="text-lg font-medium hover:text-[var(--neu-accent)] transition-colors">{s.name}</Link>
+                  <p className="text-[var(--neu-text-muted)] font-mono text-sm mt-1">{s.ipAddress}</p>
+               </div>
+             ))}
+           </div>
+        </div>
+      </div>
     </div>
   );
 }

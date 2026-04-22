@@ -1,14 +1,11 @@
 'use client';
 
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, useAuth } from "@/lib/providers";
-import { Button } from "@/components/ui/button";
-import { Trash2, Link as LinkIcon, Ban, Clock } from "lucide-react";
+import { Trash2, Link as LinkIcon, Ban, Clock, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 export default function ShareLinksPage() {
   const { t } = useTranslation();
@@ -16,7 +13,7 @@ export default function ShareLinksPage() {
   const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if(!user) return;
     try {
       const q = query(collection(db, "shareLinks"), where("ownerId", "==", user.uid));
@@ -27,9 +24,9 @@ export default function ShareLinksPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  useEffect(() => { loadData(); }, [user]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleRevoke = async (id: string) => {
     if(!confirm("Revoke this public link immediately?")) return;
@@ -62,64 +59,88 @@ export default function ShareLinksPage() {
   };
 
   return (
-    <div className="space-y-6 bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm border">
+    <div className="space-y-8 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t('share_links')}</h1>
-        <p className="text-muted-foreground mt-1">Manage public snapshots of your infrastructure.</p>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">{t('share_links')}</h1>
+        <p className="text-[var(--neu-text-muted)]">Управление публичными ссылками на вашу инфрастуктуру.</p>
       </div>
 
-      {loading ? <p>{t('loading')}</p> : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Resource</TableHead>
-              <TableHead>Target ID</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Expires</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {links.length === 0 && (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No shared links yet.</TableCell></TableRow>
-            )}
-            {links.map(l => {
+      {loading ? <p className="opacity-50">{t('loading')}</p> : (
+        <div className="space-y-4">
+           {links.length === 0 && (
+              <div className="neu-panel p-12 text-center text-[var(--neu-text-muted)]">
+                 <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                 <p>У вас еще нет публичных ссылок</p>
+              </div>
+           )}
+           {links.map((l) => {
               const now = new Date();
               const isExpired = l.expiresAt && l.expiresAt.toDate() < now;
               const isRevoked = !!l.revokedAt;
               const isActive = !isExpired && !isRevoked;
 
               return (
-              <TableRow key={l.id}>
-                <TableCell><Badge variant="outline">{l.resourceType}</Badge></TableCell>
-                <TableCell className="font-mono text-xs">{l.resourceId}</TableCell>
-                <TableCell>
-                  {isActive ? <Badge className="bg-green-500">Active</Badge> : 
-                   isRevoked ? <Badge variant="destructive">Revoked</Badge> : 
-                   <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Expired</Badge>}
-                </TableCell>
-                <TableCell>
-                  {l.expiresAt ? l.expiresAt.toDate().toLocaleString() : 'Never'}
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                   {isActive && (
-                     <>
-                        <Button variant="ghost" size="sm" onClick={() => copyLink(l.id)}>
-                          <LinkIcon className="w-4 h-4 mr-2 text-blue-500" /> Copy
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleRevoke(l.id)}>
-                          <Ban className="w-4 h-4 mr-2 text-orange-500" /> Revoke
-                        </Button>
-                     </>
-                   )}
-                   <Button variant="ghost" size="icon" onClick={() => handleDelete(l.id)}>
-                     <Trash2 className="w-4 h-4 text-red-500" />
-                   </Button>
-                </TableCell>
-              </TableRow>
-            )})}
-          </TableBody>
-        </Table>
+              <div key={l.id} className="neu-panel p-6 px-8 flex flex-col lg:flex-row items-center justify-between gap-6 transition-all duration-300">
+                 <div className="flex items-center gap-6 w-full lg:w-auto">
+                    <div className={`neu-panel-inset p-4 rounded-full shrink-0 hidden sm:block ${isActive ? 'text-green-500' : 'text-[var(--neu-text-muted)]'}`}>
+                       <LinkIcon className="w-8 h-8" />
+                    </div>
+                    <div>
+                       <div className="flex items-center gap-3 mb-2">
+                         <span className="text-xs uppercase font-bold tracking-widest bg-[var(--neu-bg)] shadow-[var(--neu-shadow-inset)] px-2 py-1 rounded text-[var(--neu-text-muted)]">
+                           {l.resourceType}
+                         </span>
+                         {isActive ? (
+                            <span className="text-xs uppercase font-bold tracking-widest text-green-500 flex items-center gap-1">
+                               <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                               Active
+                            </span>
+                         ) : isRevoked ? (
+                            <span className="text-xs uppercase font-bold tracking-widest text-red-500 flex items-center gap-1">
+                               <Ban className="w-3 h-3" />
+                               Revoked
+                            </span>
+                         ) : (
+                            <span className="text-xs uppercase font-bold tracking-widest text-orange-500 flex items-center gap-1">
+                               <Clock className="w-3 h-3" />
+                               Expired
+                            </span>
+                         )}
+                       </div>
+                       
+                       <div className="flex flex-col gap-1 mt-2 text-sm text-[var(--neu-text-muted)]">
+                          <div className="flex items-center gap-2">
+                            <span className="w-16">Target:</span>
+                            <span className="font-mono bg-[var(--neu-bg)] px-2 block truncate max-w-[200px] sm:max-w-xs">{l.resourceId}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-16">Expires:</span>
+                            <span>{l.expiresAt ? l.expiresAt.toDate().toLocaleString() : 'Never'}</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="flex items-center gap-4 w-full lg:w-auto mt-4 lg:mt-0 lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-white/5">
+                    <div className="flex gap-2 w-full justify-end">
+                       {isActive && (
+                         <>
+                            <button className="neu-button neu-button-accent px-4 py-2 shrink-0 flex items-center gap-2 text-sm" onClick={() => copyLink(l.id)}>
+                              <ExternalLink className="w-4 h-4" /> Copy Link
+                            </button>
+                            <button className="neu-button px-4 py-2 text-orange-500 shrink-0 flex items-center gap-2 text-sm" onClick={() => handleRevoke(l.id)}>
+                              <Ban className="w-4 h-4" /> Revoke
+                            </button>
+                         </>
+                       )}
+                       <button className="neu-button h-10 w-10 text-red-500 shrink-0" onClick={() => handleDelete(l.id)} title="Delete Log">
+                          <Trash2 className="w-4 h-4" />
+                       </button>
+                    </div>
+                 </div>
+              </div>
+           )})}
+        </div>
       )}
     </div>
   );

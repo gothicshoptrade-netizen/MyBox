@@ -72,90 +72,109 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-[var(--neu-bg)] text-[var(--neu-text)]">
       {/* Sidebar Desktop */}
-      <aside className="hidden w-64 flex-col border-r bg-muted/20 md:flex">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Server className="h-6 w-6" />
-            <span className="">IT-Vault</span>
+      <aside className="hidden w-72 flex-col neu-panel m-4 mr-0 rounded-3xl md:flex shrink-0">
+        <div className="flex h-20 items-center px-8">
+          <Link href="/" className="flex items-center gap-3 font-semibold">
+            <div className="neu-panel-inset p-2 rounded-full text-blue-400">
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+               <span className="text-xl font-bold tracking-wide">IT-Box</span>
+               <span className="block text-[10px] text-[var(--neu-text-muted)] font-normal uppercase tracking-widest mt-0.5">Сейф для инфраструктуры</span>
+            </div>
           </Link>
         </div>
-        <div className="flex-1">
-          <nav className="grid items-start px-2 py-4 text-sm font-medium lg:px-4">
-            {navItems.map((item) => (
+        
+        <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
+          <nav className="grid gap-2 items-start font-medium text-[15px]">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                  pathname === item.href ? "bg-muted text-primary font-semibold" : "text-muted-foreground"
+                  "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300",
+                  isActive ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] text-[var(--neu-text)] opacity-80 hover:opacity-100"
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-5 w-5" />
                 {item.label}
               </Link>
-            ))}
+            )})}
+            
+            <div className="my-4 h-px neu-panel-inset opacity-50" />
+            
+            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+               О продукте
+            </Link>
+            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+               FAQ
+            </Link>
           </nav>
         </div>
-        <div className="mt-auto p-4 flex flex-col gap-2">
-          <Button variant="ghost" className="w-full justify-start gap-3" onClick={toggleLang}>
-            <Languages className="h-4 w-4" />
-            {i18n.language === 'en' ? 'RU / EN' : 'EN / RU'}
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950" onClick={logout}>
-            <LogOut className="h-4 w-4" />
-            {t('logout')}
-          </Button>
+        
+        <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70">
+           <p className="font-semibold text-sm mb-1">Менеджер IT-активов</p>
+           <p>v1.0.0</p>
+           <p className="mt-4 mb-1">© 2026 IT-Box</p>
+           <p>info@premiumwebsite.ru</p>
+           <p className="mt-2">Политика конфиденциальности</p>
         </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/20 px-4 lg:h-[60px] lg:px-6">
-          <Button variant="outline" size="icon" className="md:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <header className="flex h-20 items-center justify-between px-6 lg:px-12 mt-4">
+          <Button variant="outline" size="icon" className="md:hidden neu-button h-12 w-12 border-0 bg-transparent" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
           </Button>
           
-          <div className="w-full flex-1">
-            {/* Minimal top bar, perhaps search later */}
-            <form onSubmit={(e) => { e.preventDefault(); /* handle search later */ }}>
-              <div className="relative max-w-sm">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Universal Search..."
-                  className="w-full appearance-none bg-background pl-8 shadow-none"
-                />
-              </div>
-            </form>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium hidden sm:inline-block">{user.email}</span>
+          <div className="flex-1 md:hidden"></div>
+          
+          <div className="hidden md:flex gap-4 ml-auto items-center">
+             <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer">
+                <Search className="h-5 w-5" />
+             </div>
+             <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+             </div>
+             
+             <div className="neu-panel-inset flex items-center p-1 rounded-full ml-4">
+               <div className="neu-button bg-[var(--neu-accent)] text-white h-10 px-5 text-sm cursor-pointer rounded-full font-bold shadow-none">RU</div>
+               <div className="h-10 px-5 flex items-center justify-center text-sm cursor-pointer rounded-full opacity-60 hover:opacity-100 font-bold" onClick={toggleLang}>EN</div>
+             </div>
+             
+             <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer ml-4 text-red-500" onClick={logout}>
+                <LogOut className="h-5 w-5" />
+             </div>
           </div>
         </header>
 
-        {/* Mobile Navigation overlay (simplified, or just use Sheet from shadcn later) */}
+        {/* Mobile Navigation overlay */}
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 flex md:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-            <aside className="relative flex w-64 flex-col bg-background">
-               <div className="flex h-14 items-center border-b px-4">
-                  <span className="font-semibold">IT-Vault</span>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+            <aside className="relative flex w-72 flex-col neu-panel m-4 rounded-3xl h-[calc(100vh-2rem)]">
+               <div className="flex h-20 items-center px-8 border-b border-white/5">
+                 <span className="text-xl font-bold tracking-wide">IT-Box</span>
                </div>
-               <nav className="grid p-4 text-sm font-medium gap-2">
+               <nav className="grid p-4 text-sm font-medium gap-2 overflow-y-auto">
                  {navItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                        pathname === item.href ? "bg-muted text-primary" : "text-muted-foreground"
+                        "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]",
+                        pathname === item.href ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80"
                       )}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-5 w-5" />
                       {item.label}
                     </Link>
                   ))}
@@ -165,7 +184,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main scrollable area */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-slate-50 dark:bg-slate-950">
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-12 pb-24">
           {children}
         </main>
       </div>

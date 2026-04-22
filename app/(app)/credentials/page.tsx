@@ -1,18 +1,12 @@
 'use client';
 
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, deleteDoc } from "firebase/firestore";
 import { db, useAuth } from "@/lib/providers";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Eye, EyeOff, Copy } from "lucide-react";
+import { Plus, Trash2, Eye, EyeOff, Copy, KeyRound, ShieldCheck, Database, TerminalSquare, Key, Globe, Search, Lock } from "lucide-react";
 import { toast } from "sonner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 
 export default function CredentialsPage() {
   const { t } = useTranslation();
@@ -34,7 +28,7 @@ export default function CredentialsPage() {
   const [resourceId, setResourceId] = useState("");
   const [notes, setNotes] = useState("");
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if(!user) return;
     try {
       const q = query(collection(db, "credentials"), where("ownerId", "==", user.uid));
@@ -45,9 +39,9 @@ export default function CredentialsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  useEffect(() => { loadData(); }, [user]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,107 +127,128 @@ export default function CredentialsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+    toast.success("Скопировано в буфер обмена");
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch(type) {
+      case 'SSH': return <TerminalSquare className="w-5 h-5 text-gray-400" />;
+      case 'DB': return <Database className="w-5 h-5 text-purple-400" />;
+      case 'WEB_PANEL': return <Globe className="w-5 h-5 text-cyan-400" />;
+      case 'API_KEY': return <Key className="w-5 h-5 text-amber-500" />;
+      default: return <KeyRound className="w-5 h-5 text-[var(--neu-text-muted)]" />;
+    }
   };
 
   return (
-    <div className="space-y-6 bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm border">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('credentials')}</h1>
-          <p className="text-sm text-green-600 dark:text-green-400 mt-1 flex items-center">
-            {t('secure_storage')}
-          </p>
+           <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
+              {t('credentials')}
+           </h1>
+           <p className="text-[var(--neu-text-muted)] flex items-center gap-2 text-sm">
+             <ShieldCheck className="w-4 h-4 text-green-500" />
+             Защифровано с использованием AES-256-GCM
+           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={<Button />}>
-            <Plus className="w-4 h-4 mr-2"/> Add Credential
+          <DialogTrigger asChild>
+            <button className="neu-button neu-button-accent px-6 py-3 shrink-0 shadow-rose-500/30">
+               <Plus className="w-4 h-4 mr-2"/> Добавить доступ
+            </button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>Add Secure Credential</DialogTitle></DialogHeader>
-            <form onSubmit={handleCreate} className="space-y-4 pt-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Name</label>
-                  <Input required value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Prod DB Root" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Type</label>
-                  <Select value={type} onValueChange={(val) => val && setType(val)}>
-                    <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SSH">SSH</SelectItem>
-                      <SelectItem value="FTP">FTP</SelectItem>
-                      <SelectItem value="DB">Database</SelectItem>
-                      <SelectItem value="WEB_PANEL">Web Panel</SelectItem>
-                      <SelectItem value="API_KEY">API Key</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Username</label>
-                  <Input value={username} onChange={e=>setUsername(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Password/Secret</label>
-                  <Input type="password" required value={password} onChange={e=>setPassword(e.target.value)} />
-                </div>
-              </div>
-              <div className="flex justify-end"><Button type="submit">Encrypt & Save</Button></div>
+          <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
+            <DialogHeader><DialogTitle className="text-2xl font-bold flex items-center gap-2"><Lock className="w-5 h-5"/> Добавление доступа</DialogTitle></DialogHeader>
+            <form onSubmit={handleCreate} className="space-y-6 pt-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Название</label>
+                   <input required value={name} onChange={e=>setName(e.target.value)} className="neu-input w-full" placeholder="Например: Prod DB Root" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Тип доступа</label>
+                   <select 
+                      value={type} 
+                      onChange={e=>setType(e.target.value)}
+                      className="neu-input w-full appearance-none cursor-pointer"
+                    >
+                      <option value="SSH" className="bg-[var(--neu-bg)]">SSH</option>
+                      <option value="FTP" className="bg-[var(--neu-bg)]">FTP</option>
+                      <option value="DB" className="bg-[var(--neu-bg)]">Database</option>
+                      <option value="WEB_PANEL" className="bg-[var(--neu-bg)]">Web Panel</option>
+                      <option value="API_KEY" className="bg-[var(--neu-bg)]">API Key</option>
+                      <option value="OTHER" className="bg-[var(--neu-bg)]">Other</option>
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Имя пользователя (Логин)</label>
+                   <input value={username} onChange={e=>setUsername(e.target.value)} className="neu-input w-full" placeholder="root" />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)] flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-green-500"/> Пароль или Секрет</label>
+                   <input type="password" required value={password} onChange={e=>setPassword(e.target.value)} className="neu-input w-full" placeholder="••••••••••••" />
+                 </div>
+               </div>
+
+              <div className="flex justify-end pt-4"><button type="submit" className="neu-button bg-rose-500 text-white shadow-rose-500/20 px-8 py-3 font-bold hover:shadow-rose-500/40">Зашифровать и Сохранить</button></div>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {loading ? <p>{t('loading')}</p> : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>Password</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {credentials.length === 0 && (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No credentials found</TableCell></TableRow>
-            )}
-            {credentials.map(c => (
-              <TableRow key={c.id}>
-                <TableCell><Badge variant="outline">{c.type}</Badge></TableCell>
-                <TableCell className="font-medium">{c.name}</TableCell>
-                <TableCell>{c.username || '-'}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {decryptedPasswords[c.id] ? (
-                      <span className="font-mono bg-muted px-2 py-1 rounded text-sm">{decryptedPasswords[c.id]}</span>
-                    ) : (
-                      <span className="text-muted-foreground tracking-widest text-lg leading-none">••••••••</span>
-                    )}
-                    <Button variant="ghost" size="icon" onClick={() => handleDecrypt(c)} disabled={loadingDecryption[c.id]}>
-                      {loadingDecryption[c.id] ? <span className="animate-spin text-xs">...</span> : decryptedPasswords[c.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                    {decryptedPasswords[c.id] && (
-                       <Button variant="ghost" size="icon" onClick={() => copyToClipboard(decryptedPasswords[c.id])}>
-                         <Copy className="w-3 h-3 text-muted-foreground" />
-                       </Button>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                   <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)}>
-                     <Trash2 className="w-4 h-4 text-red-500" />
-                   </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {loading ? <p className="opacity-50">{t('loading')}</p> : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+           {credentials.length === 0 && (
+              <div className="neu-panel p-12 text-center text-[var(--neu-text-muted)] col-span-full">
+                 <KeyRound className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                 <p>Нет сохраненных доступов</p>
+              </div>
+           )}
+           {credentials.map((c) => (
+              <div key={c.id} className="neu-panel p-6 flex flex-col h-full group relative transition-all duration-300">
+                 <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                       <div className="neu-panel-inset p-2.5 rounded-full">
+                          {getTypeIcon(c.type)}
+                       </div>
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--neu-text-muted)] bg-[var(--neu-bg)] px-2 py-1 rounded shadow-[var(--neu-shadow-inset)]">{c.type}</span>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                       <button className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(c.id)}>
+                          <Trash2 className="w-4 h-4" />
+                       </button>
+                    </div>
+                 </div>
+                 
+                 <h3 className="text-lg font-bold mb-1 truncate">{c.name}</h3>
+                 {c.username && <p className="text-[var(--neu-text-muted)] text-sm mb-4 font-mono truncate">{c.username}</p>}
+                 
+                 <div className="mt-auto pt-4">
+                    <div className="neu-panel-inset p-3 pl-4 rounded-xl flex flex-row items-center justify-between">
+                       <div className="flex-1 truncate pr-2">
+                          {decryptedPasswords[c.id] ? (
+                             <span className="font-mono text-sm tracking-wide">{decryptedPasswords[c.id]}</span>
+                          ) : (
+                             <span className="text-[var(--neu-text-muted)] tracking-[0.2em] text-lg leading-none opacity-50 relative top-[3px]">••••••••</span>
+                          )}
+                       </div>
+                       <div className="flex gap-2 shrink-0">
+                          {decryptedPasswords[c.id] && (
+                             <button className="neu-button h-8 w-8 text-blue-400" onClick={() => copyToClipboard(decryptedPasswords[c.id])}>
+                                <Copy className="w-4 h-4" />
+                             </button>
+                          )}
+                          <button className="neu-button h-8 w-8 text-[var(--neu-accent)]" onClick={() => handleDecrypt(c)} disabled={loadingDecryption[c.id]}>
+                             {loadingDecryption[c.id] ? <span className="animate-spin text-xs">...</span> : decryptedPasswords[c.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           ))}
+        </div>
       )}
     </div>
   );
