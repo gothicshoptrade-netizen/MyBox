@@ -1,20 +1,62 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# IT-Box 🗄️
 
-# Run and deploy your AI Studio app
+**Единый сейф для всей вашей IT-инфраструктуры.**
 
-This contains everything you need to run your app locally.
+IT-Box — это современное и защищенное веб-приложение для централизованного управления проектами, серверами, микросервисами и критически важными доступами. Проект создан с использованием актуальной дизайнерской концепции **Neumorphism** (Светлая и Темная темы) и включает в себя аппаратное шифрование данных на уровне сервера.
 
-View your app in AI Studio: https://ai.studio/apps/4af3c121-b914-4a30-abd0-bb078c349ffa
+![Next.js](https://img.shields.io/badge/Next.js-15+-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)
+![Firebase](https://img.shields.io/badge/Firebase-Auth_&_Firestore-FFCA28?style=for-the-badge&logo=firebase)
 
-## Run Locally
+## 🚀 Ключевые возможности
 
-**Prerequisites:**  Node.js
+- 📊 **Дашборд:** Единая панель для обзора всей инфраструктуры (счетчики, последние серверы и проекты).
+- 📁 **Проекты:** Управление активными и архивными IT-проектами (стек технологий, описание, ссылки).
+- 🖥️ **Серверы:** Инвентаризация вычислительных мощностей (IP, Провайдер, ОС, привязка к проектам).
+- 🌐 **Сервисы:** Учет развернутых API, сайтов и приложений с указанием портов и привязкой к серверам.
+- 🔐 **Доступы (Сейф):** Безопасное хранилище паролей, SSH, БД и API-ключей. **Все пароли шифруются алгоритмом AES-256-GCM**.
+- 🔗 **Публичные ссылки:** Генерация и управление (отзыв/удаление) гостевыми ссылками для передачи доступов внешним подрядчикам.
+- 🌓 **Neumorphic UI:** Уникальный "Выдавленный" дизайн интерфейса с плавными тенями, поддержкой темной и светлой темы.
+- 🌍 **Мультиязычность:** Переключение языков "на лету" (Русский и Английский).
+- 🛡️ **Аутентификация:** Безопасный вход через Google (на базе Firebase Auth).
 
+## 🛠 Технологический стек
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **Фреймворк:** React 19 + Next.js 15 (App Router).
+- **База Данных & Auth:** Firebase Firestore (NoSQL) & Firebase Authentication.
+- **Стилизация:** Tailwind CSS v4, кастомные Neumorphism CSS-переменные (`app/globals.css`).
+- **Криптография:** Web Crypto API (`crypto.subtle`) для шифрования и расшифровки (`/api/crypto/encrypt` & `/api/crypto/decrypt`).
+- **Иконки:** Lucide React.
+- **Уведомления:** Sonner (Toast notifications).
+- **i18n:** `react-i18next`.
+
+## 🔒 Безопасность и Шифрование
+
+Критичные данные (пароли, секреты) не хранятся в открытом виде.
+Перед записью в базу данных содержимое проходит шифрование в Next.js API-роутах по стандарту **AES-GCM** (с созданием уникального Вектора Инициализации `IV` и Тега Аутентификации `Auth Tag` на каждую запись). Расшифровка возможна только при наличии соответствующих ключей окружения.
+
+## ⚙️ Установка и Запуск (Для разработки)
+
+1. **Клонируйте репозиторий:**
+   ```bash
+   git clone https://github.com/gothicshoptrade-netizen/Myservershub.git
+   cd Myservershub
+   ```
+
+2. **Установите зависимости:**
+   ```bash
+   npm install
+   ```
+
+3. **Настройте переменные окружения:**
+   Переименуйте `.env.example` в `.env` и заполните нужные ключи для Firebase и шифрования AES (сгенерируйте 32-байтный ключ дли `ENCRYPTION_KEY`).
+
+4. **Запустите сервер разработки:**
+   ```bash
+   npm run dev
+   ```
+   Приложение будет доступно по адресу `http://localhost:3000`.
+
+## 🤝 Вклад в проект
+Bug reports и Pull Requests приветствуются на GitHub. Проект имеет открытый исходный код под лицензией MIT.

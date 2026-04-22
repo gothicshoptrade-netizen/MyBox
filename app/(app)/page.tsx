@@ -61,16 +61,16 @@ export default function DashboardPage() {
   if (loading) return <div className="p-4 opacity-50">{t('loading')}</div>;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6 md:space-y-8 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Дашборд</h1>
-        <p className="text-[var(--neu-text-muted)]">Обзор IT-инфраструктуры</p>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1 md:mb-2">Дашборд</h1>
+        <p className="text-sm md:text-base text-[var(--neu-text-muted)]">Обзор IT-инфраструктуры</p>
       </div>
 
       {/* Hero Banner */}
-      <div className="neu-panel relative overflow-hidden pl-6 pr-8 py-8 lg:p-10">
+      <div className="neu-panel relative overflow-hidden px-5 py-6 md:pl-6 md:pr-8 md:py-8 lg:p-10">
         <div className="absolute left-0 top-6 bottom-6 w-1 rounded-r-full bg-[var(--neu-accent)]"></div>
-        <h2 className="text-xl lg:text-2xl font-bold mb-6">
+        <h2 className="text-lg md:text-xl lg:text-2xl font-bold mb-4 md:mb-6 leading-snug">
           IT-Box — Единый сейф для всей вашей инфраструктуры
         </h2>
         <div className="space-y-5">

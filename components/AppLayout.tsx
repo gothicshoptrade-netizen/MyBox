@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/providers';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
-import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -15,11 +15,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { t, i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    const isDarkMode = localStorage.getItem('theme') === 'dark' || 
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setIsDark(isDarkMode);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     setMounted(true);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   if (!mounted) {
     return <div className="min-h-screen bg-background" />;
@@ -129,14 +150,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-20 items-center justify-between px-6 lg:px-12 mt-4">
-          <Button variant="outline" size="icon" className="md:hidden neu-button h-12 w-12 border-0 bg-transparent" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <header className="flex h-16 lg:h-20 items-center justify-between px-6 lg:px-12 mt-2 lg:mt-4">
+          <Button variant="outline" size="icon" className="md:hidden neu-button h-10 w-10 border-0 bg-transparent" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <Menu className="h-5 w-5" />
           </Button>
           
           <div className="flex-1 md:hidden"></div>
           
+          <div className="flex md:hidden gap-3 ml-auto items-center">
+             <div className="neu-button h-10 w-10 flex items-center justify-center cursor-pointer" onClick={toggleTheme}>
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+             </div>
+             <div className="neu-button h-10 w-10 flex items-center justify-center cursor-pointer text-red-500" onClick={logout}>
+                <LogOut className="h-4 w-4" />
+             </div>
+          </div>
+
           <div className="hidden md:flex gap-4 ml-auto items-center">
+             <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer" onClick={toggleTheme}>
+                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+             </div>
              <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer">
                 <Search className="h-5 w-5" />
              </div>
@@ -145,8 +178,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
              </div>
              
              <div className="neu-panel-inset flex items-center p-1 rounded-full ml-4">
-               <div className="neu-button bg-[var(--neu-accent)] text-white h-10 px-5 text-sm cursor-pointer rounded-full font-bold shadow-none">RU</div>
-               <div className="h-10 px-5 flex items-center justify-center text-sm cursor-pointer rounded-full opacity-60 hover:opacity-100 font-bold" onClick={toggleLang}>EN</div>
+               <div className={`h-10 px-5 flex items-center justify-center text-sm cursor-pointer rounded-full font-bold ${i18n.language === 'ru' ? 'neu-button bg-[var(--neu-accent)] text-white shadow-none' : 'opacity-60 hover:opacity-100'}`} onClick={() => i18n.changeLanguage('ru')}>RU</div>
+               <div className={`h-10 px-5 flex items-center justify-center text-sm cursor-pointer rounded-full font-bold ${i18n.language === 'en' ? 'neu-button bg-[var(--neu-accent)] text-white shadow-none' : 'opacity-60 hover:opacity-100'}`} onClick={() => i18n.changeLanguage('en')}>EN</div>
              </div>
              
              <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer ml-4 text-red-500" onClick={logout}>
@@ -184,7 +217,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main scrollable area */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-12 pb-24">
+        <main className="flex-1 overflow-y-auto p-4 pt-4 md:p-8 lg:p-12 pb-24">
           {children}
         </main>
       </div>
