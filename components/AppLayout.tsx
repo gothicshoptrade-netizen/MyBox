@@ -128,11 +128,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="my-4 h-px neu-panel-inset opacity-50" />
             
-            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100">
+            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100 transition-all duration-300">
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                О продукте
             </Link>
-            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100">
+            <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                FAQ
             </Link>
@@ -140,20 +140,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         
         <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70">
-           <p className="font-semibold text-sm mb-1">Менеджер IT-активов</p>
+           <p className="font-semibold text-[13px] mb-1">Менеджер IT-активов</p>
            <p>v1.0.0</p>
-           <p className="mt-4 mb-1">© 2026 IT-Box</p>
-           <p>info@premiumwebsite.ru</p>
-           <p className="mt-2">Политика конфиденциальности</p>
+           <p className="mt-4 mb-2">© 2026 IT-Box. <br/>Все права защищены.</p>
+           <div className="space-y-1.5 flex flex-col pt-1">
+             <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-flex">Тех.поддержка:<br/>info@premiumwebsite.ru</a>
+             <a href="https://t.me/usefulbots2026_bot" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--neu-accent)] transition-colors mt-1 inline-flex">Наши боты: @usefulbots2026_bot</a>
+           </div>
         </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 lg:h-20 items-center justify-between px-6 lg:px-12 mt-2 lg:mt-4">
-          <Button variant="outline" size="icon" className="md:hidden neu-button h-10 w-10 border-0 bg-transparent" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            <Menu className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-4 md:hidden">
+            <Button variant="outline" size="icon" className="neu-button h-10 w-10 border-0 bg-transparent shrink-0" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Menu className="h-5 w-5" />
+            </Button>
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <div className="neu-panel-inset p-1.5 rounded-full text-blue-400">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span className="text-lg font-bold tracking-wide">IT-Box</span>
+            </Link>
+          </div>
           
           <div className="flex-1 md:hidden"></div>
           
@@ -196,7 +206,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                <div className="flex h-20 items-center px-8 border-b border-white/5">
                  <span className="text-xl font-bold tracking-wide">IT-Box</span>
                </div>
-               <nav className="grid p-4 text-sm font-medium gap-2 overflow-y-auto">
+               <nav className="flex-1 p-4 text-sm font-medium gap-2 overflow-y-auto flex flex-col">
                  {navItems.map((item) => (
                     <Link
                       key={item.href}
@@ -211,7 +221,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       {item.label}
                     </Link>
                   ))}
+                  
+                  <div className="my-2 h-px neu-panel-inset opacity-50" />
+                  
+                  <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                     FAQ
+                  </Link>
                </nav>
+               <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70 border-t border-[var(--neu-border)]/5">
+                 <p className="mt-1 mb-2">© 2026 IT-Box. Все права защищены.</p>
+                 <div className="flex flex-col gap-1.5 mt-2">
+                   <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors">Тех. поддержка: info@premiumwebsite.ru</a>
+                   <a href="https://t.me/usefulbots2026_bot" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--neu-accent)] transition-colors mt-0.5 inline-flex flex-wrap">Telegram боты: @usefulbots2026_bot</a>
+                 </div>
+              </div>
             </aside>
           </div>
         )}
