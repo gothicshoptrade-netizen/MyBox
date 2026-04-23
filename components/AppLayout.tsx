@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/providers';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
-import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search, Moon, Sun, CreditCard } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search, Moon, Sun, CreditCard, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -25,7 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsNavigating(true);
-    const timer = setTimeout(() => setIsNavigating(false), 400);
+    const timer = setTimeout(() => setIsNavigating(false), 200);
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -96,7 +96,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: '/services', icon: Network, label: t('services') },
     { href: '/credentials', icon: KeyRound, label: t('credentials') },
     { href: '/share-links', icon: Share2, label: t('share_links') },
-    { href: '/pricing', icon: CreditCard, label: t('pricing') },
   ];
 
   const toggleLang = () => {
@@ -112,7 +111,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             initial={{ width: 0, opacity: 1 }}
             animate={{ width: '100%', opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.2, ease: "linear" }}
             className="fixed top-0 left-0 right-0 h-1 bg-[var(--neu-accent)] z-[100] shadow-[0_0_10px_var(--neu-accent)]"
           />
         )}
@@ -120,7 +119,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar Desktop */}
       <aside className="hidden w-72 flex-col neu-panel m-4 mr-0 rounded-3xl md:flex shrink-0">
-        <div className="flex-1 overflow-y-auto px-4 py-8 scrollbar-hide">
+        <div className="px-8 pt-8 pb-4">
+           <div className="flex items-center gap-3">
+              <div className="neu-panel-inset p-2 rounded-xl text-[var(--neu-accent)]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span className="text-xl font-bold tracking-tight">IT-Box</span>
+           </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
           <nav className="grid gap-2 items-start font-medium text-[15px]">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -129,7 +137,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300",
+                  "flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-200",
                   isActive ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] text-[var(--neu-text)] opacity-80 hover:opacity-100"
                 )}
               >
@@ -140,13 +148,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="my-4 h-px neu-panel-inset opacity-50" />
             
-            <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
+            <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-200", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                {t('about')}
             </Link>
-            <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-200", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
+               <HelpCircle className="h-5 w-5" />
                {t('faq')}
+            </Link>
+            <Link href="/pricing" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-200", pathname === "/pricing" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
+               <CreditCard className="h-5 w-5" />
+               {t('pricing')}
             </Link>
           </nav>
         </div>
@@ -155,8 +167,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
            <p className="font-semibold text-[13px] mb-1">{t('it_asset_manager')}</p>
            <p>v1.0.0</p>
            <p className="mt-4 mb-2">© 2026 IT-Box<br/>
-           <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a><br/>
-           <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
+           <span className="opacity-60">Email:</span> <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block">info@premiumwebsite.ru</a><br/>
+           <span className="opacity-60">Telegram:</span> <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
            <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">{t('privacy_policy')}</a></p>
         </div>
       </aside>
@@ -214,58 +226,76 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Mobile Navigation overlay */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-50 flex md:hidden">
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-            <aside className="relative flex w-72 flex-col neu-panel m-4 rounded-3xl h-[calc(100vh-2rem)] pt-6">
-               <nav className="flex-1 p-4 text-sm font-medium gap-2 overflow-y-auto flex flex-col">
-                 {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={cn(
-                        "flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]",
-                        pathname === item.href ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80"
-                      )}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {item.label}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-50 flex md:hidden">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+                onClick={() => setSidebarOpen(false)} 
+              />
+              <motion.aside 
+                initial={{ x: '-110%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-110%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="relative flex w-72 flex-col bg-[var(--neu-bg)] m-4 rounded-3xl h-[calc(100vh-2rem)] pt-6 border border-[var(--neu-text-muted)]/10 shadow-xl"
+              >
+                 <nav className="flex-1 p-4 text-sm font-medium gap-2 overflow-y-auto flex flex-col">
+                   {navItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={cn(
+                          "flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]",
+                          pathname === item.href ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80"
+                        )}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        {item.label}
+                      </Link>
+                    ))}
+                    
+                    <div className="my-2 h-px neu-panel-inset opacity-50" />
+                    
+                    <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                       {t('about')}
                     </Link>
-                  ))}
-                  
-                  <div className="my-2 h-px neu-panel-inset opacity-50" />
-                  
-                  <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                     {t('about')}
-                  </Link>
-                  <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                     {t('faq')}
-                  </Link>
-               </nav>
-               <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70 border-t border-[var(--neu-border)]/5">
-                 <p className="font-semibold text-[13px] mb-1">{t('it_asset_manager')}</p>
-                 <p>v1.0.0</p>
-                 <p className="mt-4 mb-2">© 2026 IT-Box<br/>
-                 <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a><br/>
-                 <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
-                 <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">{t('privacy_policy')}</a></p>
-              </div>
-            </aside>
-          </div>
-        )}
+                    <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                       <HelpCircle className="h-5 w-5" />
+                       {t('faq')}
+                    </Link>
+                    <Link href="/pricing" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/pricing" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                       <CreditCard className="h-5 w-5" />
+                       {t('pricing')}
+                    </Link>
+                 </nav>
+                 <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70 border-t border-[var(--neu-border)]/5">
+                   <p className="font-semibold text-[13px] mb-1">{t('it_asset_manager')}</p>
+                   <p>v1.0.0</p>
+                   <p className="mt-4 mb-2">© 2026 IT-Box<br/>
+                   <span className="opacity-60">Email:</span> <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block">info@premiumwebsite.ru</a><br/>
+                   <span className="opacity-60">Telegram:</span> <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
+                   <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">{t('privacy_policy')}</a></p>
+                </div>
+              </motion.aside>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Main scrollable area */}
         <main className="flex-1 overflow-y-auto p-4 pt-4 md:p-8 lg:p-12 pb-24">
-          <AnimatePresence mode="wait">
+          <AnimatePresence initial={false}>
             <motion.div
               key={pathname}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12, ease: "easeOut" }}
               className="h-full"
             >
               {children}

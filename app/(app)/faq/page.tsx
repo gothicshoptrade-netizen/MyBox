@@ -56,6 +56,23 @@ export default function FAQPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-12 pb-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqs.map(faq => ({
+              "@type": "Question",
+              "name": faq.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
+              }
+            }))
+          })
+        }}
+      />
       {/* Header section */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }}

@@ -137,7 +137,7 @@ function TaskModal({ projectId, projectName }: { projectId: string; projectName:
                 </div>
               </div>
             </div>
-            <button onClick={() => deleteTask(task.id)} className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={() => deleteTask(task.id)} className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" aria-label={t('delete_task')}>
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
@@ -264,41 +264,43 @@ export default function ProjectsPage() {
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold mb-2 pr-8">{p.name}</h3>
-              <p className="text-[var(--neu-text-muted)] text-sm mb-4 line-clamp-3 flex-1">{p.description || t('no_description')}</p>
-              
-              <div className="mb-4">
-                <Dialog>
-                  <DialogTrigger className="neu-button w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold">
-                    <ClipboardList className="w-4 h-4 text-[var(--neu-accent)]" /> {t('tasks')}
-                  </DialogTrigger>
-                  <TaskModal projectId={p.id} projectName={p.name} />
-                </Dialog>
+            <h3 className="text-xl font-bold mb-2 pr-8">{p.name}</h3>
+            <p className="text-[var(--neu-text-muted)] text-sm mb-4 line-clamp-3">
+              {p.description || t('no_description')}
+            </p>
+            
+            {p.url && (
+              <div className="flex items-center gap-2 text-sm text-blue-400 mb-4 opacity-80 hover:opacity-100">
+                <Globe className="w-4 h-4" />
+                <a href={p.url.startsWith('http') ? p.url : `https://${p.url}`} target="_blank" rel="noreferrer" className="truncate">{p.url}</a>
               </div>
-              
-              {p.url && (
-                <div className="flex items-center gap-2 text-sm text-blue-400 mb-4 opacity-80 hover:opacity-100">
-                  <Globe className="w-4 h-4" />
-                  <a href={p.url.startsWith('http') ? p.url : `https://${p.url}`} target="_blank" rel="noreferrer" className="truncate">{p.url}</a>
+            )}
+            
+            {p.techStack && (
+              <div className="mb-6 pt-4 border-t border-[var(--neu-text-muted)]/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Code2 className="w-4 h-4 text-[var(--neu-text-muted)]" />
+                  <span className="text-xs font-semibold text-[var(--neu-text-muted)] uppercase tracking-wider">{t('field_stack')}</span>
                 </div>
-              )}
-              
-              {p.techStack && (
-                <div className="mt-auto pt-4 border-t border-[var(--neu-text-muted)]/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Code2 className="w-4 h-4 text-[var(--neu-text-muted)]" />
-                    <span className="text-xs font-semibold text-[var(--neu-text-muted)] uppercase tracking-wider">{t('field_stack')}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {p.techStack.split(',').map((t: string) => t.trim()).filter(Boolean).map((tech: string, i: number) => (
-                      <span key={i} className="text-xs px-2.5 py-1 neu-panel-inset rounded-full opacity-80">{tech}</span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  {p.techStack.split(',').map((t: string) => t.trim()).filter(Boolean).map((tech: string, i: number) => (
+                    <span key={i} className="text-xs px-2.5 py-1 neu-panel-inset rounded-full opacity-80">{tech}</span>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
+
+            <div className="mt-auto">
+              <Dialog>
+                <DialogTrigger className="neu-button w-full flex items-center justify-center gap-2 py-3 text-sm font-bold neu-button-accent">
+                  <ClipboardList className="w-4 h-4" /> {t('tasks')}
+                </DialogTrigger>
+                <TaskModal projectId={p.id} projectName={p.name} />
+              </Dialog>
+            </div>
 
               <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleDelete(p.id)} className="neu-button h-8 w-8 text-red-500"><Trash2 className="w-4 h-4"/></button>
+                <button onClick={() => handleDelete(p.id)} className="neu-button h-8 w-8 text-red-500" aria-label={t('delete_project')}><Trash2 className="w-4 h-4"/></button>
               </div>
             </div>
           ))}

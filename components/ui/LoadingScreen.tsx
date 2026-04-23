@@ -1,10 +1,16 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 
 export const LoadingScreen = () => {
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[var(--neu-bg)]">
@@ -48,7 +54,9 @@ export const LoadingScreen = () => {
         className="mt-8 text-center"
       >
         <h2 className="text-xl font-bold tracking-widest text-[var(--neu-text)] uppercase mb-2">IT-Box</h2>
-        <p className="text-[var(--neu-text-muted)] font-medium text-sm animate-pulse">{t('loading')}</p>
+        <p className="text-[var(--neu-text-muted)] font-medium text-sm animate-pulse">
+          {mounted ? t('loading') : 'Loading...'}
+        </p>
       </motion.div>
     </div>
   );

@@ -214,7 +214,7 @@ export default function CredentialsPage() {
                     </div>
                     
                     <div className="flex gap-2">
-                       <button className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(c.id)}>
+                       <button className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(c.id)} aria-label={t('delete_credential')}>
                           <Trash2 className="w-4 h-4" />
                        </button>
                     </div>
@@ -234,11 +234,11 @@ export default function CredentialsPage() {
                        </div>
                        <div className="flex gap-2 shrink-0">
                           {decryptedPasswords[c.id] && (
-                             <button className="neu-button h-8 w-8 text-blue-400" onClick={() => copyToClipboard(decryptedPasswords[c.id])}>
+                             <button className="neu-button h-8 w-8 text-blue-400" onClick={() => copyToClipboard(decryptedPasswords[c.id])} aria-label={t('copy_password')}>
                                 <Copy className="w-4 h-4" />
                              </button>
                           )}
-                          <button className="neu-button h-8 w-8 text-[var(--neu-accent)]" onClick={() => handleDecrypt(c)} disabled={loadingDecryption[c.id]}>
+                          <button className="neu-button h-8 w-8 text-[var(--neu-accent)]" onClick={() => handleDecrypt(c)} disabled={loadingDecryption[c.id]} aria-label={t('toggle_visibility')}>
                              {loadingDecryption[c.id] ? <span className="animate-spin text-xs">...</span> : decryptedPasswords[c.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                        </div>

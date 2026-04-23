@@ -9,7 +9,7 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.04
     }
   }
 };
@@ -75,6 +75,28 @@ export default function PricingPage() {
       animate="show"
       className="max-w-7xl mx-auto space-y-12 pb-20"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "IT-Box Subscription",
+            "description": "Subscription plans for infrastructure management and credential vault.",
+            "offers": plans.map(plan => ({
+              "@type": "Offer",
+              "name": plan.name,
+              "price": plan.price,
+              "priceCurrency": "RUB",
+              "itemOffered": {
+                "@type": "Service",
+                "name": plan.name,
+                "description": plan.features.join(', ')
+              }
+            }))
+          })
+        }}
+      />
       <motion.div variants={item} className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{t('pricing')}</h1>
         <p className="text-lg text-[var(--neu-text-muted)] max-w-2xl mx-auto">
