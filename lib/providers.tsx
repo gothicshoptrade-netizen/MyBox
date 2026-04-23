@@ -126,6 +126,7 @@ i18n
           "notifications": "Notifications",
           "no_notifications": "No notifications",
           "mark_all_read": "Mark all as read",
+          "enable_notifications": "Enable Notifications",
           "notif_project_created": "Project Created",
           "notif_server_added": "Server Added",
           "notif_service_added": "Service Added",
@@ -240,6 +241,7 @@ i18n
           "notifications": "Уведомления",
           "no_notifications": "Нет уведомлений",
           "mark_all_read": "Отметить все как прочитанные",
+          "enable_notifications": "Включить уведомления",
           "notif_project_created": "Проект создан",
           "notif_server_added": "Сервер добавлен",
           "notif_service_added": "Сервис добавлен",
@@ -258,8 +260,10 @@ type AuthContextType = {
   isPaywall: boolean;
   trialEndsAt: Date | null;
   subscriptionEndsAt: Date | null;
+  notificationsEnabled: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: Partial<{ notificationsEnabled: boolean }>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -268,8 +272,10 @@ const AuthContext = createContext<AuthContextType>({
   isPaywall: false,
   trialEndsAt: null,
   subscriptionEndsAt: null,
+  notificationsEnabled: true,
   login: async () => {},
-  logout: async () => {}
+  logout: async () => {},
+  updateProfile: async () => {}
 });
 
 export function useAuth() {
@@ -282,6 +288,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [isPaywall, setIsPaywall] = useState(false);
   const [trialEndsAt, setTrialEndsAt] = useState<Date | null>(null);
   const [subscriptionEndsAt, setSubscriptionEndsAt] = useState<Date | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
     let unsubscribeDoc = () => {};
@@ -308,6 +315,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             email: u.email,
             trialEndsAt: trialEnd,
             subscriptionEndsAt: null,
+            notificationsEnabled: true,
             createdAt: serverTimestamp()
           });
         }
@@ -323,6 +331,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           
           setTrialEndsAt(tEnd);
           setSubscriptionEndsAt(sEnd);
+          setNotificationsEnabled(data.notificationsEnabled !== false);
 
           const now = new Date();
           const trialExpired = tEnd ? now > tEnd : false;
@@ -353,9 +362,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     await signOut(auth);
   };
 
+  const updateProfile = async (data: Partial<{ notificationsEnabled: boolean }>) => {
+    if (!user) return;
+    await setDoc(doc(db, 'users', user.uid), data, { merge: true });
+  };
+
   return (
     <I18nextProvider i18n={i18n}>
-      <AuthContext.Provider value={{ user, loading, isPaywall, trialEndsAt, subscriptionEndsAt, login, logout }}>
+      <AuthContext.Provider value={{ user, loading, isPaywall, trialEndsAt, subscriptionEndsAt, notificationsEnabled, login, logout, updateProfile }}>
         {children}
       </AuthContext.Provider>
     </I18nextProvider>
