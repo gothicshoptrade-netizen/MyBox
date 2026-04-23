@@ -10,8 +10,10 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { Input } from './ui/input';
 
+import { Paywall } from './Paywall';
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, login, logout } = useAuth();
+  const { user, loading, isPaywall, login, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -43,14 +45,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   if (!mounted) {
-    return <div className="min-h-screen bg-background" />;
+    return <div className="min-h-screen bg-[var(--neu-bg)]" />;
   }
 
   // If loading auth state
   if (loading) {
     return (
-      <div className="flex bg-background h-screen w-full items-center justify-center">
-        <p className="text-muted-foreground animate-pulse">{t('loading')}</p>
+      <div className="flex bg-[var(--neu-bg)] h-screen w-full items-center justify-center">
+        <p className="text-[var(--neu-text-muted)] font-medium animate-pulse">{t('loading')}</p>
       </div>
     );
   }
@@ -59,24 +61,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // We'll let the individual page handle it, but wait, usually we apply AppLayout in an (app) group.
   // Actually, we can just check if pathname starts with /share/
   if (pathname.startsWith('/share/')) {
-    return <main className="min-h-screen bg-background">{children}</main>;
+    return <main className="min-h-screen bg-[var(--neu-bg)]">{children}</main>;
   }
 
   // If not logged in
   if (!user) {
     return (
-      <div className="flex bg-background h-screen w-full flex-col items-center justify-center space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">IT-Vault</h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Centralized storage for servers, services, projects, and credentials with AES-256-GCM encryption.
+      <div className="flex bg-[var(--neu-bg)] text-[var(--neu-text)] h-screen w-full flex-col items-center justify-center p-6">
+        <div className="neu-panel p-10 md:p-14 text-center rounded-3xl max-w-md w-full relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-[var(--neu-accent)]" />
+          <div className="neu-panel-inset mx-auto w-20 h-20 rounded-full flex flex-col justify-center items-center text-blue-400 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h1 className="text-3xl font-bold tracking-wide mb-3">IT-Box</h1>
+          <p className="text-[var(--neu-text-muted)] font-medium mb-10 leading-relaxed text-sm lg:text-base">
+            Единый сейф для вашей инфраструктуры. Серверы, сервисы, доступы AES-256-GCM.
           </p>
+          <button onClick={login} className="neu-button font-bold text-base w-full py-4 bg-[var(--neu-accent)] text-white shadow-none hover:opacity-90 transition-opacity">
+            Войти через Google
+          </button>
         </div>
-        <Button onClick={login} size="lg">
-          {t('login')}
-        </Button>
       </div>
     );
+  }
+
+  if (isPaywall) {
+    return <Paywall />;
   }
 
   const navItems = [
@@ -103,7 +113,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div>
                <span className="text-xl font-bold tracking-wide">IT-Box</span>
-               <span className="block text-[10px] text-[var(--neu-text-muted)] font-normal uppercase tracking-widest mt-0.5">Сейф для инфраструктуры</span>
+               <span className="block text-[10px] text-[var(--neu-text-muted)] font-normal tracking-wide mt-0.5 capitalize-first">Сейф для инфраструктуры</span>
             </div>
           </Link>
         </div>
@@ -128,7 +138,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="my-4 h-px neu-panel-inset opacity-50" />
             
-            <Link href="/" className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-[var(--neu-text)] opacity-60 hover:opacity-100 transition-all duration-300">
+            <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                О продукте
             </Link>
@@ -142,11 +152,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70">
            <p className="font-semibold text-[13px] mb-1">Менеджер IT-активов</p>
            <p>v1.0.0</p>
-           <p className="mt-4 mb-2">© 2026 IT-Box. <br/>Все права защищены.</p>
-           <div className="space-y-1.5 flex flex-col pt-1">
-             <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-flex">Тех.поддержка:<br/>info@premiumwebsite.ru</a>
-             <a href="https://t.me/usefulbots2026_bot" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--neu-accent)] transition-colors mt-1 inline-flex">Наши боты: @usefulbots2026_bot</a>
-           </div>
+           <p className="mt-4 mb-2">© 2026 IT-Box<br/>
+           <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a></p>
+           <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">Политика конфиденциальности</a></p>
         </div>
       </aside>
 
@@ -224,17 +232,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   
                   <div className="my-2 h-px neu-panel-inset opacity-50" />
                   
+                  <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                     О продукте
+                  </Link>
                   <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                      FAQ
                   </Link>
                </nav>
                <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70 border-t border-[var(--neu-border)]/5">
-                 <p className="mt-1 mb-2">© 2026 IT-Box. Все права защищены.</p>
-                 <div className="flex flex-col gap-1.5 mt-2">
-                   <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors">Тех. поддержка: info@premiumwebsite.ru</a>
-                   <a href="https://t.me/usefulbots2026_bot" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--neu-accent)] transition-colors mt-0.5 inline-flex flex-wrap">Telegram боты: @usefulbots2026_bot</a>
-                 </div>
+                 <p className="font-semibold text-[13px] mb-1">Менеджер IT-активов</p>
+                 <p>v1.0.0</p>
+                 <p className="mt-4 mb-2">© 2026 IT-Box<br/>
+                 <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a></p>
+                 <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">Политика конфиденциальности</a></p>
               </div>
             </aside>
           </div>

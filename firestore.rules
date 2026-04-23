@@ -98,7 +98,22 @@ service cloud.firestore {
              data.accessedAt is timestamp;
     }
 
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'createdAt']) &&
+             data.email is string &&
+             data.createdAt is timestamp &&
+             (data.trialEndsAt is string || data.trialEndsAt is timestamp || data.trialEndsAt == null || !('trialEndsAt' in data.keys())) &&
+             (data.subscriptionEndsAt is string || data.subscriptionEndsAt is timestamp || data.subscriptionEndsAt == null || !('subscriptionEndsAt' in data.keys()));
+    }
+
     // The Collections
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && incoming().createdAt == request.time;
+      allow update: if false; // Updates happen via Admin SDK (webhook) only
+      allow delete: if false;
+    }
+
     match /projects/{projectId} {
       allow read: if isSignedIn() && existing().ownerId == request.auth.uid;
       allow create: if isSignedIn() && isValidId(projectId) && isValidProject(incoming()) && incoming().createdAt == request.time;

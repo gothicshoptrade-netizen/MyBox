@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, User, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { getFirestore, enableNetwork, disableNetwork } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 import i18n from 'i18next';
 import { initReactI18next, I18nextProvider } from 'react-i18next';
@@ -82,6 +82,9 @@ i18n
 type AuthContextType = {
   user: User | null;
   loading: boolean;
+  isPaywall: boolean;
+  trialEndsAt: Date | null;
+  subscriptionEndsAt: Date | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -89,6 +92,9 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  isPaywall: false,
+  trialEndsAt: null,
+  subscriptionEndsAt: null,
   login: async () => {},
   logout: async () => {}
 });
@@ -100,13 +106,66 @@ export function useAuth() {
 export function Providers({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPaywall, setIsPaywall] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState<Date | null>(null);
+  const [subscriptionEndsAt, setSubscriptionEndsAt] = useState<Date | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    let unsubscribeDoc = () => {};
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
       setUser(u);
-      setLoading(false);
+      if (!u) {
+        setLoading(false);
+        setIsPaywall(false);
+        setTrialEndsAt(null);
+        setSubscriptionEndsAt(null);
+        return;
+      }
+
+      // Check user document for subscription logic
+      const userRef = doc(db, 'users', u.uid);
+      
+      const checkDoc = async () => {
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          // New User: 14 days free trial
+          const trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+          await setDoc(userRef, {
+            email: u.email,
+            trialEndsAt: trialEnd,
+            subscriptionEndsAt: null,
+            createdAt: serverTimestamp()
+          });
+        }
+      };
+      
+      await checkDoc();
+
+      unsubscribeDoc = onSnapshot(userRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          const tEnd = data.trialEndsAt ? new Date(data.trialEndsAt) : null;
+          const sEnd = data.subscriptionEndsAt ? new Date(data.subscriptionEndsAt) : null;
+          
+          setTrialEndsAt(tEnd);
+          setSubscriptionEndsAt(sEnd);
+
+          const now = new Date();
+          const trialExpired = tEnd ? now > tEnd : false;
+          const subExpired = sEnd ? now > sEnd : true;
+
+          // If trial is over and no active subscription (or it's expired) -> Paywall
+          setIsPaywall(trialExpired && subExpired);
+        }
+        setLoading(false);
+      });
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeDoc();
+    };
   }, []);
 
   const login = async () => {
@@ -120,7 +179,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AuthContext.Provider value={{ user, loading, login, logout }}>
+      <AuthContext.Provider value={{ user, loading, isPaywall, trialEndsAt, subscriptionEndsAt, login, logout }}>
         {children}
       </AuthContext.Provider>
     </I18nextProvider>
