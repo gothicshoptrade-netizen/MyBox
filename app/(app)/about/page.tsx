@@ -3,6 +3,7 @@
 import { Shield, FolderKanban, Server, Network, KeyRound, Share2, Search, Zap, Smartphone } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation();
