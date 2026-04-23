@@ -106,7 +106,18 @@ i18n
           "priority_low": "Low",
           "status_todo": "To Do",
           "status_in_progress": "In Progress",
-          "status_done": "Done"
+          "status_done": "Done",
+          "pricing": "Pricing",
+          "plan_free": "Free",
+          "plan_basic": "Basic",
+          "plan_pro": "Professional",
+          "plan_days": "7 days",
+          "plan_month": "/ month",
+          "plan_current": "Current Plan",
+          "plan_choose": "Choose Plan",
+          "plan_features_free": "7-day trial, basic features",
+          "plan_features_basic": "Unlimited items, standard support",
+          "plan_features_pro": "Team collaboration, premium support"
         }
       },
       ru: {
@@ -195,7 +206,18 @@ i18n
           "priority_low": "Низкий",
           "status_todo": "Сделать",
           "status_in_progress": "В процессе",
-          "status_done": "Готово"
+          "status_done": "Готово",
+          "pricing": "Тарифы",
+          "plan_free": "Бесплатно",
+          "plan_basic": "Базовый",
+          "plan_pro": "Профессиональный",
+          "plan_days": "7 дней",
+          "plan_month": "/ месяц",
+          "plan_current": "Текущий тариф",
+          "plan_choose": "Выбрать тариф",
+          "plan_features_free": "7 дней триал, базовые функции",
+          "plan_features_basic": "Безлимит объектов, стандартная поддержка",
+          "plan_features_pro": "Командная работа, приоритетная поддержка"
         }
       }
     },

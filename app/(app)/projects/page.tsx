@@ -83,7 +83,7 @@ function TaskModal({ projectId, projectName }: { projectId: string; projectName:
         </DialogTitle>
       </DialogHeader>
 
-      <form onSubmit={addTask} className="mt-6 flex gap-3">
+      <form onSubmit={addTask} className="mt-6 flex flex-col sm:flex-row gap-3">
         <input 
           required 
           value={content} 
@@ -91,19 +91,21 @@ function TaskModal({ projectId, projectName }: { projectId: string; projectName:
           className="neu-input flex-1" 
           placeholder={t('task_content')} 
         />
-        <select 
-          value={priority} 
-          onChange={e => setPriority(e.target.value)}
-          className="neu-input w-32 appearance-none cursor-pointer"
-        >
-          <option value="low" className="bg-[var(--neu-bg)]">{t('priority_low')}</option>
-          <option value="normal" className="bg-[var(--neu-bg)]">{t('priority_normal')}</option>
-          <option value="urgent" className="bg-[var(--neu-bg)]">{t('priority_urgent')}</option>
-          <option value="critical" className="bg-[var(--neu-bg)]">{t('priority_critical')}</option>
-        </select>
-        <button type="submit" className="neu-button neu-button-accent p-3">
-          <Plus className="w-5 h-5" />
-        </button>
+        <div className="flex gap-3">
+          <select 
+            value={priority} 
+            onChange={e => setPriority(e.target.value)}
+            className="neu-input flex-1 sm:w-32 appearance-none cursor-pointer"
+          >
+            <option value="low" className="bg-[var(--neu-bg)]">{t('priority_low')}</option>
+            <option value="normal" className="bg-[var(--neu-bg)]">{t('priority_normal')}</option>
+            <option value="urgent" className="bg-[var(--neu-bg)]">{t('priority_urgent')}</option>
+            <option value="critical" className="bg-[var(--neu-bg)]">{t('priority_critical')}</option>
+          </select>
+          <button type="submit" className="neu-button neu-button-accent p-3 shrink-0">
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       </form>
 
       <div className="mt-8 space-y-4">

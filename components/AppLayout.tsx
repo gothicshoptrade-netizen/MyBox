@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/providers';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
-import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Server, Network, KeyRound, Share2, LogOut, Menu, Languages, Search, Moon, Sun, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -96,6 +96,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: '/services', icon: Network, label: t('services') },
     { href: '/credentials', icon: KeyRound, label: t('credentials') },
     { href: '/share-links', icon: Share2, label: t('share_links') },
+    { href: '/pricing', icon: CreditCard, label: t('pricing') },
   ];
 
   const toggleLang = () => {
@@ -128,7 +129,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300",
+                  "flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300",
                   isActive ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] text-[var(--neu-text)] opacity-80 hover:opacity-100"
                 )}
               >
@@ -139,11 +140,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="my-4 h-px neu-panel-inset opacity-50" />
             
-            <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
+            <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                {t('about')}
             </Link>
-            <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
+            <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all duration-300", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                {t('faq')}
             </Link>
@@ -224,7 +225,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
-                        "flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]",
+                        "flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]",
                         pathname === item.href ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80"
                       )}
                     >
@@ -235,11 +236,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   
                   <div className="my-2 h-px neu-panel-inset opacity-50" />
                   
-                  <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                  <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                      {t('about')}
                   </Link>
-                  <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
+                  <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-2 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                      {t('faq')}
                   </Link>
