@@ -30,8 +30,8 @@ export default function PricingPage() {
       duration: t('plan_days'),
       features: [
         t('plan_features_free'),
-        'Basic IT tracking',
-        '1 User'
+        t('feat_basic_tracking'),
+        t('feat_1_user')
       ],
       icon: Zap,
       color: 'text-blue-400',
@@ -44,8 +44,8 @@ export default function PricingPage() {
       duration: t('plan_month'),
       features: [
         t('plan_features_basic'),
-        'Encrypted Storage',
-        'Priority support'
+        t('feat_encrypted'),
+        t('feat_priority')
       ],
       icon: Shield,
       color: 'text-purple-400',
@@ -58,9 +58,9 @@ export default function PricingPage() {
       duration: t('plan_month'),
       features: [
         t('plan_features_pro'),
-        'Unlimited sharing',
-        'API Access',
-        'Dedicated account manager'
+        t('feat_unlimited_share'),
+        t('feat_api'),
+        t('feat_manager')
       ],
       icon: Crown,
       color: 'text-amber-500',
@@ -100,7 +100,7 @@ export default function PricingPage() {
       <motion.div variants={item} className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{t('pricing')}</h1>
         <p className="text-lg text-[var(--neu-text-muted)] max-w-2xl mx-auto">
-          Choose the best plan for your infrastructure management needs.
+          {t('pricing_subtitle')}
         </p>
       </motion.div>
 
@@ -123,7 +123,6 @@ export default function PricingPage() {
               </div>
               <div>
                 <h3 className="text-xl font-bold">{plan.name}</h3>
-                <p className="text-sm text-[var(--neu-text-muted)] opacity-80">Professional Suite</p>
               </div>
             </div>
 
@@ -153,12 +152,12 @@ export default function PricingPage() {
       </div>
 
       <motion.div variants={item} className="neu-panel p-8 md:p-12 text-center bg-muted/30">
-        <h3 className="text-2xl font-bold mb-4">Enterprise Needs?</h3>
+        <h3 className="text-2xl font-bold mb-4">{t('enterprise_title')}</h3>
         <p className="text-[var(--neu-text-muted)] mb-8 max-w-xl mx-auto">
-          Need a custom solution for a large organization with hundreds of servers and custom security requirements?
+          {t('enterprise_desc')}
         </p>
         <a href="mailto:info@premiumwebsite.ru" className="neu-button neu-button-accent px-10 py-4 font-bold inline-block">
-          Contact Sales
+          {t('contact_sales')}
         </a>
       </motion.div>
     </motion.div>

@@ -16,13 +16,19 @@ import { motion, AnimatePresence } from 'motion/react';
 import { NotificationBell } from './NotificationBell';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, isPaywall, login, logout } = useAuth();
+  const { user, loading, isPaywall, login, loginWithEmail, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const pathname = usePathname();
   const [isNavigating, setIsNavigating] = useState(false);
+
+  const [authMode, setAuthMode] = useState<'options' | 'email'>('options');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPass, setAuthPass] = useState('');
+  const [isRegister, setIsRegister] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
     setIsNavigating(true);
@@ -78,9 +84,66 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <p className="text-[var(--neu-text-muted)] font-medium mb-10 leading-relaxed text-sm lg:text-base">
             {t('login_subtitle')}
           </p>
-          <button onClick={login} className="neu-button font-bold text-base w-full py-4 bg-[var(--neu-accent)] text-white shadow-none hover:opacity-90 transition-opacity">
-            {t('login')}
-          </button>
+          {authMode === 'options' ? (
+            <div className="flex flex-col gap-3">
+              <button onClick={login} className="neu-button font-bold text-base w-full py-4 bg-[var(--neu-accent)] text-white shadow-none hover:opacity-90 transition-opacity">
+                {t('login_google') || t('login')}
+              </button>
+              <button 
+                onClick={() => {
+                  alert(t('telegram_alert'));
+                }}
+                className="neu-button font-bold text-base w-full py-4 bg-[#2f96ce] text-white shadow-none hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 2 20 20" fill="currentColor"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM6.9 11.2l-1.3-.4c-.5-.1-.5-.5.1-.7l7.5-2.9c.7-.3 1.3.2 1.1 1.1l-1.3 6.1c-.1.7-.6 1-.1 1l-3.2-2.4-1.5 1.5c-.2.2-.4.4-.8.4l.2-3.1 5.6-5.1c.2-.2 0-.4-.4-.1l-6.9 4.3z"/></svg>
+                {t('login_telegram')}
+              </button>
+              <button onClick={() => setAuthMode('email')} className="neu-button font-bold text-base w-full py-4 transition-opacity">
+                {t('login_email')}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 text-left">
+              <Input 
+                type="email" 
+                placeholder={t('email_ph')} 
+                value={authEmail} 
+                onChange={(e) => setAuthEmail(e.target.value)} 
+                className="w-full text-base py-6 neu-panel-inset border-0"
+              />
+              <Input 
+                type="password" 
+                placeholder={t('password_ph')} 
+                value={authPass} 
+                onChange={(e) => setAuthPass(e.target.value)} 
+                className="w-full text-base py-6 neu-panel-inset border-0"
+              />
+              <div className="flex items-center gap-2 mb-2">
+                <input type="checkbox" id="reg-check" checked={isRegister} onChange={(e) => setIsRegister(e.target.checked)} />
+                <label htmlFor="reg-check" className="text-sm opacity-80 cursor-pointer">Register new account</label>
+              </div>
+              <button 
+                onClick={async () => {
+                  if(!authEmail || !authPass) return;
+                  setAuthLoading(true);
+                  try {
+                    await loginWithEmail(authEmail, authPass, isRegister);
+                  } catch (e: any) {
+                    alert(e.message);
+                  } finally {
+                    setAuthLoading(false);
+                  }
+                }} 
+                disabled={authLoading}
+                className="neu-button font-bold text-base w-full py-4 bg-[var(--neu-accent)] text-white shadow-none hover:opacity-90 transition-opacity"
+              >
+                {authLoading ? t('loading') : t('sign_in')}
+              </button>
+              <button onClick={() => setAuthMode('options')} className="mt-2 text-sm opacity-60 hover:opacity-100 font-bold transition-opacity text-center w-full">
+                {t('back')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

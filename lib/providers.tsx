@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, User, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User, signInWithPopup, GoogleAuthProvider, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 import i18n from 'i18next';
@@ -114,6 +114,7 @@ i18n
           "copy_password": "Copy Password",
           "toggle_visibility": "Toggle Visibility",
           "pricing": "Pricing",
+          "pricing_subtitle": "Choose the best plan for your infrastructure management needs.",
           "plan_free": "Free",
           "plan_basic": "Basic",
           "plan_pro": "Professional",
@@ -122,7 +123,25 @@ i18n
           "plan_current": "Current Plan",
           "plan_choose": "Choose Plan",
           "plan_features_free": "7-day trial, basic features",
+          "plan_features_basic": "Unlimited items, standard support",
           "plan_features_pro": "Team collaboration, premium support",
+          "feat_basic_tracking": "Basic IT tracking",
+          "feat_1_user": "1 User",
+          "feat_encrypted": "Encrypted Storage",
+          "feat_priority": "Priority support",
+          "feat_unlimited_share": "Unlimited sharing",
+          "feat_api": "API Access",
+          "feat_manager": "Dedicated account manager",
+          "enterprise_title": "Enterprise Needs?",
+          "enterprise_desc": "Need a custom solution for a large organization with hundreds of servers and custom security requirements?",
+          "contact_sales": "Contact Sales",
+          "login_telegram": "Login with Telegram",
+          "login_email": "Login with Email",
+          "email_ph": "Email address",
+          "password_ph": "Password",
+          "sign_in": "Sign In",
+          "back": "Back",
+          "telegram_alert": "Telegram login requires a backend integration (Firebase Custom Token). Please configure a bot.",
           "notifications": "Notifications",
           "no_notifications": "No notifications",
           "mark_all_read": "Mark all as read",
@@ -228,6 +247,7 @@ i18n
           "copy_password": "Скопировать пароль",
           "toggle_visibility": "Скрыть/Показать",
           "pricing": "Тарифы",
+          "pricing_subtitle": "Выберите подходящий тариф для управления вашей инфраструктурой.",
           "plan_free": "Бесплатно",
           "plan_basic": "Базовый",
           "plan_pro": "Профессиональный",
@@ -238,6 +258,23 @@ i18n
           "plan_features_free": "7 дней триал, базовые функции",
           "plan_features_basic": "Безлимит объектов, стандартная поддержка",
           "plan_features_pro": "Командная работа, приоритетная поддержка",
+          "feat_basic_tracking": "Базовый учет IT активов",
+          "feat_1_user": "1 Пользователь",
+          "feat_encrypted": "Зашифрованное хранилище",
+          "feat_priority": "Приоритетная поддержка",
+          "feat_unlimited_share": "Безлимитный шеринг",
+          "feat_api": "Доступ к API",
+          "feat_manager": "Персональный менеджер",
+          "enterprise_title": "Корпоративные клиенты?",
+          "enterprise_desc": "Нужно кастомное решение для крупной организации с сотнями серверов и особыми требованиями к безопасности?",
+          "contact_sales": "Связаться с отделом продаж",
+          "login_telegram": "Войти через Telegram",
+          "login_email": "Войти по почте",
+          "email_ph": "Email адрес",
+          "password_ph": "Пароль",
+          "sign_in": "Войти",
+          "back": "Назад",
+          "telegram_alert": "Вход через Telegram требует интеграции на бэкенде (Firebase Custom Token). Пожалуйста, настройте бота.",
           "notifications": "Уведомления",
           "no_notifications": "Нет уведомлений",
           "mark_all_read": "Отметить все как прочитанные",
@@ -262,6 +299,7 @@ type AuthContextType = {
   subscriptionEndsAt: Date | null;
   notificationsEnabled: boolean;
   login: () => Promise<void>;
+  loginWithEmail: (e: string, p: string, isRegister?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<{ notificationsEnabled: boolean }>) => Promise<void>;
 };
@@ -274,6 +312,7 @@ const AuthContext = createContext<AuthContextType>({
   subscriptionEndsAt: null,
   notificationsEnabled: true,
   login: async () => {},
+  loginWithEmail: async () => {},
   logout: async () => {},
   updateProfile: async () => {}
 });
@@ -358,6 +397,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     await signInWithPopup(auth, provider);
   };
 
+  const loginWithEmail = async (email: string, pass: string, isRegister = false) => {
+    if (isRegister) {
+      await createUserWithEmailAndPassword(auth, email, pass);
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
@@ -369,7 +416,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AuthContext.Provider value={{ user, loading, isPaywall, trialEndsAt, subscriptionEndsAt, notificationsEnabled, login, logout, updateProfile }}>
+      <AuthContext.Provider value={{ user, loading, isPaywall, trialEndsAt, subscriptionEndsAt, notificationsEnabled, login, loginWithEmail, logout, updateProfile }}>
         {children}
       </AuthContext.Provider>
     </I18nextProvider>
