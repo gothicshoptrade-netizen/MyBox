@@ -175,7 +175,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           
           <div className="flex-1 md:hidden"></div>
           
-          <div className="flex md:hidden gap-3 ml-auto items-center">
+          <div className="flex md:hidden gap-2 ml-auto items-center">
+             <div className="neu-panel-inset flex items-center p-0.5 rounded-full">
+                <div className={cn(
+                  "h-8 px-3 flex items-center justify-center text-[10px] cursor-pointer rounded-full font-bold transition-all",
+                  i18n.language === 'ru' ? "neu-button bg-[var(--neu-accent)] text-white shadow-none" : "opacity-60"
+                )} onClick={() => i18n.changeLanguage('ru')}>RU</div>
+                <div className={cn(
+                  "h-8 px-3 flex items-center justify-center text-[10px] cursor-pointer rounded-full font-bold transition-all",
+                  i18n.language === 'en' ? "neu-button bg-[var(--neu-accent)] text-white shadow-none" : "opacity-60"
+                )} onClick={() => i18n.changeLanguage('en')}>EN</div>
+             </div>
              <div className="neu-button h-10 w-10 flex items-center justify-center cursor-pointer" onClick={toggleTheme}>
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
              </div>

@@ -1,93 +1,108 @@
-# Документ Требований к Продукту (PRD)
+# Product Requirements Document (PRD): IT-Box
 
-**Название продукта:** IT-Box (IT-Vault)  
-**Версия:** 1.0.0  
-**Дата разработки:** Апрель 2026 г.  
-
----
-
-## 1. Концепция и Видение
-
-**IT-Box** — это централизованное B2B/B2C SaaS-решение (или Self-hosted приложение) для IT-директоров, DevOps-инженеров, системных администраторов и фрилансеров. 
-Цель продукта — объединить разрозненную информацию (таблицы Excel, заметки, чаты) о серверах, проектах, микросервисах и критических аутентификационных данных в одном надежном, эстетичном и зашифрованном пространстве.
-
-Ключевой фокус сделан на:
-- **Высоком уровне безопасности:** Аппаратное шифрование критических данных.
-- **Уникальном дизайне:** Использование стилистики Neumorphism для снижения когнитивной нагрузки и создания современного UX.
+**Product Name:** IT-Box (IT-Vault)  
+**Version:** 1.1.0  
+**Status:** In Development / MVP  
+**Date:** April 2026
 
 ---
 
-## 2. Целевая аудитория
+## 1. Executive Summary & Vision
 
-1. **DevOps-инженеры и Сисадмины**: Хранение IP-адресов, ssh-ключей, портов и OS данных всех серверов.
-2. **IT-Freelancers (Разработчики)**: Управление доступами (БД, хостинг, API) клиентских веб-сайтов и приложений.
-3. **Руководители разработки**: Обзор общей инфраструктуры (дашборд), контроль проектов.
+**IT-Box** is a specialized B2B/B2C SaaS solution designed for IT leaders, DevOps engineers, system administrators, and freelancers. The product aims to unify fragmented infrastructure data—often scattered across spreadsheets, notes, and chat apps—into a single, aesthetic, and cryptographically secure vault.
 
----
-
-## 3. Функциональные требования
-
-### 3.1 Модуль Аутентификации
-- Регистрация и авторизация пользователей должна осуществляться через **Google Auth** (посредством Firebase).
-- Защита всех внутренних страниц (роутинг перенаправляет неавторизованных пользователей на UI входа).
-
-### 3.2 Дашборд (Обзорная панель)
-- Отображение агрегированной статистики: Счетчик активных проектов, серверов, сервисов, доступов.
-- Список последних (Recent) добавленных серверов и проектов со ссылками на детальный просмотр.
-
-### 3.3 Модуль "Проекты"
-- Возможные статусы: `Active`, `Archived`.
-- Данные проекта: Название, Описание, Стек технологий (массив/теги), Ссылка на сайт.
-- Возможности: Создание, чтение, редактирование, удаление (CRUD).
-
-### 3.4 Модуль "Серверы"
-- Данные сервера: Название (Имя хоста), IPv4 / Домен, Провайдер (AWS, Selectel, DO), ОС (Ubuntu, CentOS), Заметки.
-- Привязка (Отношение 1:M): Каждый сервер может быть (опционально) привязан к Проекту.
-- Копирование IP-адреса в буфер обмена по клику.
-
-### 3.5 Модуль "Сервисы"
-- Данные: Название, Порт (напр. 443, 8080), URL, Заметки.
-- Привязка: Каждый сервис может располагаться на конкретном Сервере (из списка добавленных серверов пользователя).
-
-### 3.6 Сейф (Модуль Доступов) - Критично 🔴
-- Типы доступов: `SSH`, `FTP`, `DB`, `WEB_PANEL`, `API_KEY`, `OTHER`.
-- Данные: Имя пользователя, Пароль / Секрет / Private Key.
-- Чтение (Показ): Поля паролей скрыты по умолчанию (маска `••••••••`).
-- **Требование к дешифровке**: Расшифровка происходит строго по нажатию на иконку ("Глаз") с запросом к API.
-- Копирование расшифрованного значения в буфер обмена.
-
-### 3.7 Расшаривание (Share Links)
-- Возможность генерировать временные ссылки на сущности (Сервер, Проект, Доступ), чтобы поделиться ими (напр., передать пароль подрядчику).
-- Управление ссылками: Просмотр списка сгенерированных токенов.
-- Режимы статуса: `Active`, `Expired` (время истекло), `Revoked` (отозвано вручную владельцем).
+### Core Value Propositions:
+- **Security First:** "Bullet-proof" encryption for sensitive credentials.
+- **Unified Inventory:** A single source of truth for Servers, Projects, and Services.
+- **Modern UX:** A high-end Neumorphic design that prioritizes clarity and speed.
 
 ---
 
-## 4. Нефункциональные требования
+## 2. Target Audience
 
-- **Шифрование данных:** Использование стандарта `AES-256-GCM` на уровне API. В Firestore не должно быть открытых паролей в полях `passwordEncrypted`. Вектор инициализации (IV) должен быть уникальным для каждой записи.
-- **Интернационализация (i18n):** Поддержка Английского (EN) и Русского (RU) языков интерфейса без перезагрузки страницы.
-- **Производительность:** SPA подход (Next.js App Router). Кеширование `useCallback` для загрузки списков.
-- **Отзывчивость (Responsive):** Мобильное меню ("Бургер"), адаптация Grid-таблиц под мобильные телефоны и планшеты (скрытие колонок или плиточный интерфейс).
-
----
-
-## 5. Дизайн-система (UI/UX)
-
-- **Концепция:** Neumorphism (Soft UI).
-- **Цветовые переводы:** Корректная поддержка Светлого и Темного режима с сохранением стейта в `localStorage` и привязкой к CSS-селектору `.dark` на теге `<html>`.
-- **CSS-переменные:** 
-  - Фон (`--neu-bg`)
-  - Тени ("Наружные": `--neu-shadow`, "Внутренние/Вдавленные": `--neu-shadow-inset`).
-  - Акценты: Использование ярко-голубого (`var(--neu-accent)`) для основного призыва к действию (CTA кнопок).
-- **Шрифт:** Современный шрифт `Geist` (sans-serif) для минимализма и читабельности.
-- **Иконки:** Векторная библиотека `Lucide`.
+1. **DevOps & SysAdmins:** Need a registry of hardware/cloud assets, SSH keys, and firewall configurations.
+2. **IT Freelancers & Full-stack Developers:** Manage multiple client projects, access codes (DB, Hosting, API), and server stacks.
+3. **IT Managers:** Require a high-level overview (Dashboard) of infrastructure health and resource allocation.
 
 ---
 
-## 6. Требования к Инфраструктуре и Структуре
+## 3. Product Features (Functional Requirements)
 
-- **Frontend:** React 19, Next.js 15
-- **Стилизация:** Tailwind CSS 4.0
-- **База Данных:** Firebase Firestore (Документо-ориентированная СУБД).
-- **CI/CD:** Поддержка компиляции `next build` без Type ошибок. Экспорт для развертывания в Google Cloud Run или Vercel.
+### 3.1 Authentication & Onboarding
+- **Google OAuth Integration:** Secure entry via Firebase Authentication.
+- **Paywall/Trial Logic:** 14-day free trial period followed by a subscription model (300 RUB/mo) integrated via YooKassa API.
+
+### 3.2 Global Dashboard
+- **Aggregated Metrics:** Real-time counters for Projects, Servers, and Services.
+- **Quick Links:** Access recently added or modified infrastructure entities.
+
+### 3.3 Infrastructure Modules
+- **Projects:** 
+  - Manage project lifecycles (Active/Archived).
+  - Documentation of tech stacks (Tags), descriptions, and live URLs.
+- **Servers:**
+  - Inventory of IP addresses, providers (AWS, GCP, DigitalOcean), OS types (Ubuntu, CentOS), and notes.
+  - Relational mapping to Projects.
+- **Services:**
+  - Mapping of microservices to specific servers.
+  - Tracking of ports (443, 8080) and internal/external URLs.
+
+### 3.4 The Secure Vault (Credentials Management)
+- **Encryption Algorithm:** Standard `AES-256-GCM` using the Web Crypto API.
+- **Selective Decryption:** Password fields are masked by default. Decryption is performed server-side or via a secure API call only upon specific user interaction.
+- **Clipboard Security:** One-click copy for decrypted secrets.
+
+### 3.5 Ephemeral Sharing (Share Links)
+- **Time-bound Access:** Generate temporary URLs to share specific server or credential details.
+- **Lifecycle Management:** Users can view, revoke, or delete active sharing tokens.
+
+---
+
+## 4. Non-Functional Requirements
+
+- **Security:** Zero-knowledge principles where possible. Sensitive keys reside in server environment variables.
+- **Localization (i18n):** Real-time switching between English and Russian.
+- **Performance:** Single Page Application (SPA) architecture utilizing Next.js for high-speed routing.
+- **Responsiveness:** Tactile Neumorphic mobile-first design.
+
+---
+
+## 5. Technical Architecture
+
+- **Frontend:** React 19, Next.js 15 (App Router).
+- **Backend:** Next.js Server Components and API Routes (Node.js).
+- **Database:** Firebase Firestore (NoSQL) with hardened Security Rules.
+- **Styling:** Tailwind CSS v4.0 with Custom CSS Properties for Neumorphic depth.
+- **Animations:** Motion (Framer Motion) for state transitions.
+
+---
+
+## 6. Design System (UI/UX)
+
+- **Aesthetic:** Neumorphism (Soft UI).
+- **Themes:** Persistent Light/Dark theme toggle using `next-themes`.
+- **Typography:** `Geist Sans` for structural text, `Geist Mono` for technical data.
+
+---
+
+## 7. Roadmap & Future Scope
+
+### Phase 1: MVP (Current)
+- CRUD for all major entities.
+- Basic AES encryption.
+- Multi-language support.
+
+### Phase 2: Collaboration (Q3 2026)
+- **Teams & RBAC:** Invite colleagues to shared projects with specific permissions (Reader/Editor).
+- **Activity Feed:** Detailed audit logs of all changes and secret reveals.
+
+### Phase 3: Automation (Q1 2027)
+- **Cloud Importers:** Auto-sync servers from AWS/GCP APIs.
+- **Uptime Monitoring:** Basic ping checks for registered Services.
+
+---
+
+## 8. Compliance & Legal
+
+- **Data Privacy:** Users own their data. Encryption ensures even database administrators cannot read sensitive secrets.
+- **Localization:** Compliant with primary data storage regulations in targeted regions.
