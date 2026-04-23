@@ -120,6 +120,21 @@
         "accessedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["ip", "userAgent", "accessedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "A notification alert for the user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] },
+        "isRead": { "type": "boolean" },
+        "link": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "type", "isRead", "createdAt"]
     }
   },
   "firestore": {
@@ -130,6 +145,7 @@
     "services": { "schema": { "$ref": "#/entities/Service" }, "description": "Services deployed on servers." },
     "credentials": { "schema": { "$ref": "#/entities/Credential" }, "description": "Encrypted credentials stored by the user." },
     "shareLinks": { "schema": { "$ref": "#/entities/ShareLink" }, "description": "Secure link objects to share resources." },
-    "shareLinks/{tokenId}/logs": { "schema": { "$ref": "#/entities/AccessLog" }, "description": "Visitor logs for a share link." }
+    "shareLinks/{tokenId}/logs": { "schema": { "$ref": "#/entities/AccessLog" }, "description": "Visitor logs for a share link." },
+    "notifications": { "schema": { "$ref": "#/entities/Notification" }, "description": "Real-time user notifications." }
   }
 }

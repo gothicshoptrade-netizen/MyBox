@@ -7,10 +7,12 @@ import { db, useAuth } from "@/lib/providers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit, Share2, Server as ServerIcon, Network, Cpu, MemoryStick } from "lucide-react";
 import { toast } from "sonner";
+import { useNotifications } from "@/lib/notifications";
 
 export default function ServersPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { sendNotification } = useNotifications();
   const [servers, setServers] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,12 @@ export default function ServersPage() {
         updatedAt: serverTimestamp()
       });
       toast.success("Server created");
+      sendNotification({
+        title: t('notif_server_added'),
+        message: `${name} (${ipAddress})`,
+        type: 'info',
+        link: '/servers'
+      });
       setOpen(false);
       setName(""); setIp(""); setProvider(""); setOs(""); setProjectId(""); setNotes("");
       loadData();

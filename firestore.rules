@@ -106,7 +106,29 @@ service cloud.firestore {
              (data.subscriptionEndsAt is string || data.subscriptionEndsAt is timestamp || data.subscriptionEndsAt == null || !('subscriptionEndsAt' in data.keys()));
     }
 
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'title', 'message', 'type', 'isRead', 'createdAt']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.title is string && data.title.size() <= 200 &&
+             data.message is string && data.message.size() <= 1000 &&
+             data.type in ['info', 'success', 'warning', 'error'] &&
+             data.isRead is bool &&
+             (data.link is string || !('link' in data.keys())) &&
+             data.createdAt is timestamp;
+    }
+
     // The Collections
+    match /notifications/{notifId} {
+      allow read: if isSignedIn() && existing().userId == request.auth.uid;
+      // Allow creation by authenticated users for themselves (simplified for now)
+      allow create: if isSignedIn() && isValidId(notifId) && isValidNotification(incoming()) && incoming().createdAt == request.time;
+      // Allow updating ONLY the isRead field
+      allow update: if isSignedIn() && existing().userId == request.auth.uid && 
+                     incoming().diff(existing()).affectedKeys().hasOnly(['isRead']) &&
+                     incoming().isRead is bool;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && incoming().createdAt == request.time;

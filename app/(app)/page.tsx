@@ -118,56 +118,64 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-        <motion.div variants={item} className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
-           <div className="flex justify-between items-start">
-             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase w-2/3">{t('active_projects')}</span>
-             <div className="neu-panel-inset p-2.5 rounded-full text-blue-400">
-               <FolderKanban className="w-5 h-5" />
+        <motion.div variants={item}>
+          <Link href="/projects" prefetch={true} className="neu-panel p-6 flex flex-col justify-between h-full aspect-square md:aspect-auto md:min-h-[192px] group cursor-pointer transition-all hover:scale-[1.02] block">
+             <div className="flex justify-between items-start">
+               <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase w-2/3">{t('active_projects')}</span>
+               <div className="neu-panel-inset p-2.5 rounded-full text-blue-400 group-hover:bg-blue-400/10 transition-colors">
+                 <FolderKanban className="w-5 h-5" />
+               </div>
              </div>
-           </div>
-           <div>
-             <div className="text-5xl font-bold mb-4">{stats.projects}</div>
-             <Link href="/projects" prefetch={true} className="text-blue-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></Link>
-           </div>
+             <div>
+               <div className="text-5xl font-bold mb-4">{stats.projects}</div>
+               <div className="text-blue-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></div>
+             </div>
+          </Link>
         </motion.div>
 
-        <motion.div variants={item} className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
-           <div className="flex justify-between items-start">
-             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('servers')}</span>
-             <div className="neu-panel-inset p-2.5 rounded-full text-purple-400">
-               <Server className="w-5 h-5" />
+        <motion.div variants={item}>
+          <Link href="/servers" prefetch={true} className="neu-panel p-6 flex flex-col justify-between h-full aspect-square md:aspect-auto md:min-h-[192px] group cursor-pointer transition-all hover:scale-[1.02] block">
+             <div className="flex justify-between items-start">
+               <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('servers')}</span>
+               <div className="neu-panel-inset p-2.5 rounded-full text-purple-400 group-hover:bg-purple-400/10 transition-colors">
+                 <Server className="w-5 h-5" />
+               </div>
              </div>
-           </div>
-           <div>
-             <div className="text-5xl font-bold mb-4">{stats.servers}</div>
-             <Link href="/servers" prefetch={true} className="text-purple-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></Link>
-           </div>
+             <div>
+               <div className="text-5xl font-bold mb-4">{stats.servers}</div>
+               <div className="text-purple-400 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></div>
+             </div>
+          </Link>
         </motion.div>
 
-        <motion.div variants={item} className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
-           <div className="flex justify-between items-start">
-             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('services')}</span>
-             <div className="neu-panel-inset p-2.5 rounded-full text-amber-500">
-               <Network className="w-5 h-5" />
+        <motion.div variants={item}>
+          <Link href="/services" prefetch={true} className="neu-panel p-6 flex flex-col justify-between h-full aspect-square md:aspect-auto md:min-h-[192px] group cursor-pointer transition-all hover:scale-[1.02] block">
+             <div className="flex justify-between items-start">
+               <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('services')}</span>
+               <div className="neu-panel-inset p-2.5 rounded-full text-amber-500 group-hover:bg-amber-500/10 transition-colors">
+                 <Network className="w-5 h-5" />
+               </div>
              </div>
-           </div>
-           <div>
-             <div className="text-5xl font-bold mb-4">{stats.services}</div>
-             <Link href="/services" prefetch={true} className="text-amber-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></Link>
-           </div>
+             <div>
+               <div className="text-5xl font-bold mb-4">{stats.services}</div>
+               <div className="text-amber-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></div>
+             </div>
+          </Link>
         </motion.div>
 
-        <motion.div variants={item} className="neu-panel p-6 flex flex-col justify-between aspect-square md:aspect-auto md:h-48 group cursor-pointer transition-all hover:scale-[1.02]">
-           <div className="flex justify-between items-start">
-             <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('credentials')}</span>
-             <div className="neu-panel-inset p-2.5 rounded-full text-rose-500">
-               <KeyRound className="w-5 h-5" />
+        <motion.div variants={item}>
+          <Link href="/credentials" prefetch={true} className="neu-panel p-6 flex flex-col justify-between h-full aspect-square md:aspect-auto md:min-h-[192px] group cursor-pointer transition-all hover:scale-[1.02] block">
+             <div className="flex justify-between items-start">
+               <span className="text-xs md:text-sm font-semibold tracking-wider text-[var(--neu-text-muted)] uppercase">{t('credentials')}</span>
+               <div className="neu-panel-inset p-2.5 rounded-full text-rose-500 group-hover:bg-rose-500/10 transition-colors">
+                 <KeyRound className="w-5 h-5" />
+               </div>
              </div>
-           </div>
-           <div>
-             <div className="text-5xl font-bold mb-4">{stats.credentials}</div>
-             <Link href="/credentials" prefetch={true} className="text-rose-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></Link>
-           </div>
+             <div>
+               <div className="text-5xl font-bold mb-4">{stats.credentials}</div>
+               <div className="text-rose-500 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">{t('view_all')} <ArrowRight className="w-4 h-4" /></div>
+             </div>
+          </Link>
         </motion.div>
       </div>
 
@@ -175,28 +183,34 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-2 gap-8">
         <motion.div variants={item} className="neu-panel p-6 md:p-8">
            <h3 className="text-xl font-bold mb-6">{t('recent_projects')}</h3>
-           <div className="space-y-6">
+          <div className="space-y-4">
              {recentProjects.length === 0 ? <p className="text-sm opacity-50">{t('no_data')}</p> : null}
              {recentProjects.map((p) => (
-               <div key={p.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                  <Link href={"/projects"} prefetch={true} className="text-lg font-medium hover:text-[var(--neu-accent)] transition-colors">{p.name}</Link>
+               <Link href="/projects" prefetch={true} key={p.id} className="block group p-4 -mx-4 rounded-2xl hover:bg-[var(--neu-accent)]/5 transition-all">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-medium group-hover:text-[var(--neu-accent)] transition-colors">{p.name}</span>
+                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                  </div>
                   <p className="text-[var(--neu-text-muted)] text-sm mt-1 truncate">{p.description || t('no_description')}</p>
-               </div>
+               </Link>
              ))}
-           </div>
+          </div>
         </motion.div>
 
         <motion.div variants={item} className="neu-panel p-6 md:p-8">
            <h3 className="text-xl font-bold mb-6">{t('recent_servers')}</h3>
-           <div className="space-y-6">
+          <div className="space-y-4">
              {recentServers.length === 0 ? <p className="text-sm opacity-50">{t('no_data')}</p> : null}
              {recentServers.map((s) => (
-               <div key={s.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                  <Link href={"/servers"} prefetch={true} className="text-lg font-medium hover:text-[var(--neu-accent)] transition-colors">{s.name}</Link>
+               <Link href="/servers" prefetch={true} key={s.id} className="block group p-4 -mx-4 rounded-2xl hover:bg-[var(--neu-accent)]/5 transition-all">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-medium group-hover:text-[var(--neu-accent)] transition-colors">{s.name}</span>
+                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                  </div>
                   <p className="text-[var(--neu-text-muted)] font-mono text-sm mt-1">{s.ipAddress}</p>
-               </div>
+               </Link>
              ))}
-           </div>
+          </div>
         </motion.div>
       </div>
     </motion.div>

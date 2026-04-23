@@ -7,10 +7,12 @@ import { db, useAuth } from "@/lib/providers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Eye, EyeOff, Copy, KeyRound, ShieldCheck, Database, TerminalSquare, Key, Globe, Search, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { useNotifications } from "@/lib/notifications";
 
 export default function CredentialsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { sendNotification } = useNotifications();
   const [credentials, setCredentials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -75,6 +77,12 @@ export default function CredentialsPage() {
         updatedAt: serverTimestamp()
       });
       toast.success("Credential created and securely encrypted");
+      sendNotification({
+        title: t('notif_credential_added'),
+        message: name,
+        type: 'success',
+        link: '/credentials'
+      });
       setOpen(false);
       setName(""); setType("OTHER"); setUsername(""); setPassword(""); setResourceType("none"); setResourceId(""); setNotes("");
       loadData();

@@ -13,6 +13,7 @@ import { Input } from './ui/input';
 import { Paywall } from './Paywall';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { motion, AnimatePresence } from 'motion/react';
+import { NotificationBell } from './NotificationBell';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, isPaywall, login, logout } = useAuth();
@@ -198,6 +199,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
              <div className="neu-button h-10 w-10 flex items-center justify-center cursor-pointer" onClick={toggleTheme}>
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
              </div>
+             <NotificationBell />
              <div className="neu-button h-10 w-10 flex items-center justify-center cursor-pointer text-red-500" onClick={logout}>
                 <LogOut className="h-4 w-4" />
              </div>
@@ -207,6 +209,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
              <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer" onClick={toggleTheme}>
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
              </div>
+             <NotificationBell />
              <div className="neu-button h-12 w-12 flex items-center justify-center cursor-pointer">
                 <Search className="h-5 w-5" />
              </div>
@@ -237,11 +240,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)} 
               />
               <motion.aside 
-                initial={{ x: '-110%' }}
+                initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
-                exit={{ x: '-110%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="relative flex w-72 flex-col bg-[var(--neu-bg)] m-4 rounded-3xl h-[calc(100vh-2rem)] pt-6 border border-[var(--neu-text-muted)]/10 shadow-xl"
+                exit={{ x: '-100%' }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="relative flex w-72 flex-col bg-[var(--neu-bg)] m-0 rounded-r-xl h-full pt-6 border-r border-[var(--neu-text-muted)]/10 shadow-2xl"
               >
                  <nav className="flex-1 p-4 text-sm font-medium gap-2 overflow-y-auto flex flex-col">
                    {navItems.map((item) => (

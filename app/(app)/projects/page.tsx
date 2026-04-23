@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Edit, FolderKanban, Globe, Code2, ClipboardList, CheckCircle2, Circle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useNotifications } from "@/lib/notifications";
 
 function TaskModal({ projectId, projectName }: { projectId: string; projectName: string }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { sendNotification } = useNotifications();
   const [tasks, setTasks] = useState<any[]>([]);
   const [content, setContent] = useState("");
   const [priority, setPriority] = useState("normal");
@@ -61,6 +63,14 @@ function TaskModal({ projectId, projectName }: { projectId: string; projectName:
         updatedAt: serverTimestamp(),
         completedAt: newStatus === "done" ? serverTimestamp() : null
       });
+      if (newStatus === "done") {
+        sendNotification({
+          title: t('notif_task_completed'),
+          message: `${task.content} (${projectName})`,
+          type: 'success',
+          link: `/projects`
+        });
+      }
     } catch (err) {
       toast.error("Update failed");
     }
@@ -150,6 +160,7 @@ function TaskModal({ projectId, projectName }: { projectId: string; projectName:
 export default function ProjectsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { sendNotification } = useNotifications();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -193,6 +204,12 @@ export default function ProjectsPage() {
         updatedAt: serverTimestamp()
       });
       toast.success("Project created");
+      sendNotification({
+        title: t('notif_project_created'),
+        message: name,
+        type: 'info',
+        link: '/projects'
+      });
       setOpen(false);
       setName(""); setDesc(""); setUrl(""); setStack(""); setStatus("active");
       loadProjects();

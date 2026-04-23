@@ -7,10 +7,12 @@ import { db, useAuth } from "@/lib/providers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, ExternalLink, Share2, Network, Globe } from "lucide-react";
 import { toast } from "sonner";
+import { useNotifications } from "@/lib/notifications";
 
 export default function ServicesPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { sendNotification } = useNotifications();
   const [services, setServices] = useState<any[]>([]);
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +54,12 @@ export default function ServicesPage() {
         updatedAt: serverTimestamp()
       });
       toast.success("Service created");
+      sendNotification({
+        title: t('notif_service_added'),
+        message: name,
+        type: 'info',
+        link: '/services'
+      });
       setOpen(false);
       setName(""); setUrl(""); setPort(""); setServerId(""); setNotes("");
       loadData();

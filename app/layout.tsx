@@ -3,6 +3,7 @@ import './globals.css';
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from '@/lib/providers';
+import { NotificationProvider } from '@/lib/notifications';
 import { Toaster } from '@/components/ui/sonner';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -76,8 +77,10 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          {children}
-          <Toaster />
+          <NotificationProvider>
+            {children}
+            <Toaster />
+          </NotificationProvider>
         </Providers>
       </body>
     </html>

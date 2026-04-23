@@ -122,8 +122,15 @@ i18n
           "plan_current": "Current Plan",
           "plan_choose": "Choose Plan",
           "plan_features_free": "7-day trial, basic features",
-          "plan_features_basic": "Unlimited items, standard support",
-          "plan_features_pro": "Team collaboration, premium support"
+          "plan_features_pro": "Team collaboration, premium support",
+          "notifications": "Notifications",
+          "no_notifications": "No notifications",
+          "mark_all_read": "Mark all as read",
+          "notif_project_created": "Project Created",
+          "notif_server_added": "Server Added",
+          "notif_service_added": "Service Added",
+          "notif_task_completed": "Task Completed",
+          "notif_credential_added": "Credential Added"
         }
       },
       ru: {
@@ -144,7 +151,7 @@ i18n
           "safe_for_infra": "Сейф для инфраструктуры",
           "active_projects": "Активные проекты",
           "total_servers": "Всего серверов",
-          "total_services": "Всего сервисов",
+          "total_services": "Всего серверов",
           "stored_credentials": "Доступы",
           "recent_projects": "Последние проекты",
           "recent_servers": "Последние серверы",
@@ -229,7 +236,15 @@ i18n
           "plan_choose": "Выбрать тариф",
           "plan_features_free": "7 дней триал, базовые функции",
           "plan_features_basic": "Безлимит объектов, стандартная поддержка",
-          "plan_features_pro": "Командная работа, приоритетная поддержка"
+          "plan_features_pro": "Командная работа, приоритетная поддержка",
+          "notifications": "Уведомления",
+          "no_notifications": "Нет уведомлений",
+          "mark_all_read": "Отметить все как прочитанные",
+          "notif_project_created": "Проект создан",
+          "notif_server_added": "Сервер добавлен",
+          "notif_service_added": "Сервис добавлен",
+          "notif_task_completed": "Задача выполнена",
+          "notif_credential_added": "Доступ добавлен"
         }
       }
     },
