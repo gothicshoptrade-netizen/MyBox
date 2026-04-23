@@ -8,8 +8,8 @@ import { Toaster } from '@/components/ui/sonner';
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: 'My Google AI Studio App',
-  description: 'My Google AI Studio App',
+  title: 'IT-Box | Asset Manager',
+  description: 'Unified vault for your infrastructure. Servers, services, credentials AES-256-GCM.',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {

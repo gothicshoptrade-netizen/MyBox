@@ -10,14 +10,15 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: [".next/*", "node_modules/*", "dist/*"],
+  },
+  ...compat.extends("next/core-web-vitals"),
   {
     rules: {
-      "react-hooks/set-state-in-effect": "off",
       "react-hooks/exhaustive-deps": "off",
       "react/no-unescaped-entities": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn"
+      "@typescript-eslint/no-explicit-any": "off"
     }
   }
 ];

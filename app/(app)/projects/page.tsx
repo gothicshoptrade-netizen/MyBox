@@ -2,11 +2,148 @@
 
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import { db, useAuth } from "@/lib/providers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit, FolderKanban, Globe, Code2 } from "lucide-react";
+import { Plus, Trash2, Edit, FolderKanban, Globe, Code2, ClipboardList, CheckCircle2, Circle, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+function TaskModal({ projectId, projectName }: { projectId: string; projectName: string }) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [content, setContent] = useState("");
+  const [priority, setPriority] = useState("normal");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user || !projectId) return;
+    const q = query(
+      collection(db, "projects", projectId, "tasks"),
+      where("ownerId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsub = onSnapshot(q, (snap) => {
+      setTasks(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, [user, projectId]);
+
+  const addTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+    try {
+      await addDoc(collection(db, "projects", projectId, "tasks"), {
+        content,
+        priority,
+        status: "todo",
+        ownerId: user!.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      setContent("");
+      setPriority("normal");
+      toast.success(t('task_add'));
+    } catch (err) {
+      toast.error("Failed to add task");
+    }
+  };
+
+  const toggleTask = async (task: any) => {
+    try {
+      const newStatus = task.status === "done" ? "todo" : "done";
+      await updateDoc(doc(db, "projects", projectId, "tasks", task.id), {
+        status: newStatus,
+        updatedAt: serverTimestamp(),
+        completedAt: newStatus === "done" ? serverTimestamp() : null
+      });
+    } catch (err) {
+      toast.error("Update failed");
+    }
+  };
+
+  const deleteTask = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "projects", projectId, "tasks", id));
+    } catch (err) {
+      toast.error("Delete failed");
+    }
+  };
+
+  return (
+    <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-hide" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+          <ClipboardList className="w-6 h-6 text-[var(--neu-accent)]" />
+          {t('tasks')}: {projectName}
+        </DialogTitle>
+      </DialogHeader>
+
+      <form onSubmit={addTask} className="mt-6 flex gap-3">
+        <input 
+          required 
+          value={content} 
+          onChange={e => setContent(e.target.value)} 
+          className="neu-input flex-1" 
+          placeholder={t('task_content')} 
+        />
+        <select 
+          value={priority} 
+          onChange={e => setPriority(e.target.value)}
+          className="neu-input w-32 appearance-none cursor-pointer"
+        >
+          <option value="low" className="bg-[var(--neu-bg)]">{t('priority_low')}</option>
+          <option value="normal" className="bg-[var(--neu-bg)]">{t('priority_normal')}</option>
+          <option value="urgent" className="bg-[var(--neu-bg)]">{t('priority_urgent')}</option>
+          <option value="critical" className="bg-[var(--neu-bg)]">{t('priority_critical')}</option>
+        </select>
+        <button type="submit" className="neu-button neu-button-accent p-3">
+          <Plus className="w-5 h-5" />
+        </button>
+      </form>
+
+      <div className="mt-8 space-y-4">
+        {loading ? <p className="opacity-50 text-center">{t('loading')}</p> : null}
+        {!loading && tasks.length === 0 ? <p className="opacity-50 text-center py-8">{t('task_no_tasks')}</p> : null}
+        
+        {tasks.map(task => (
+          <div key={task.id} className="neu-panel p-4 flex items-center justify-between gap-4 group">
+            <div className="flex items-center gap-4 flex-1">
+              <button onClick={() => toggleTask(task)} className={cn("shrink-0 transition-colors", task.status === "done" ? "text-green-500" : "text-[var(--neu-text-muted)]")}>
+                {task.status === "done" ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
+              </button>
+              <div className="flex-1">
+                <p className={cn("font-medium transition-all", task.status === "done" && "line-through opacity-50")}>{task.content}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={cn(
+                    "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
+                    task.priority === 'critical' ? "bg-red-500/10 text-red-500" :
+                    task.priority === 'urgent' ? "bg-orange-500/10 text-orange-500" :
+                    task.priority === 'low' ? "bg-blue-500/10 text-blue-500" : "bg-gray-500/10 text-gray-500"
+                  )}>
+                    {t(`priority_${task.priority}`)}
+                  </span>
+                  {task.status === "done" && task.completedAt && (
+                    <span className="text-[10px] text-[var(--neu-text-muted)] flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {new Date(task.completedAt.toDate()).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <button onClick={() => deleteTask(task.id)} className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </DialogContent>
+  );
+}
 
 export default function ProjectsPage() {
   const { t } = useTranslation();
@@ -79,7 +216,7 @@ export default function ProjectsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">{t('projects')}</h1>
-          <p className="text-[var(--neu-text-muted)]">Управление активными и архивными проектами</p>
+          <p className="text-[var(--neu-text-muted)]">{t('manage_projects_desc')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger className="neu-button neu-button-accent px-6 py-3 shrink-0 flex items-center justify-center font-semibold text-sm">
@@ -87,26 +224,26 @@ export default function ProjectsPage() {
           </DialogTrigger>
           <DialogContent className="border-0 sm:rounded-3xl p-8" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
             <DialogHeader><DialogTitle className="text-2xl font-bold">{t('create_project')}</DialogTitle></DialogHeader>
-            <form onSubmit={handleCreate} className="space-y-6 pt-4">
+            <form onSubmit={handleCreate} className="space-y-6 pt-4 pb-12 sm:pb-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Название</label>
-                <input required value={name} onChange={e=>setName(e.target.value)} className="neu-input w-full" placeholder="Например: IT-Box" />
+                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_name')}</label>
+                <input required value={name} onChange={e=>setName(e.target.value)} className="neu-input w-full" placeholder={t('placeholder_name')} />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Описание</label>
-                <textarea value={desc} onChange={e=>setDesc(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder="Краткое описание..." />
+                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_description')}</label>
+                <textarea value={desc} onChange={e=>setDesc(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder={t('placeholder_desc')} />
               </div>
               
               <div className="space-y-2">
-                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">URL</label>
+                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_url')}</label>
                  <input value={url} onChange={e=>setUrl(e.target.value)} className="neu-input w-full" placeholder="https://" />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Технологии (через запятую)</label>
-                <input value={stack} onChange={e=>setStack(e.target.value)} className="neu-input w-full" placeholder="React, Node.js..." />
+                <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_stack')}</label>
+                <input value={stack} onChange={e=>setStack(e.target.value)} className="neu-input w-full" placeholder={t('placeholder_stack')} />
               </div>
-              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">Сохранить</button></div>
+              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">{t('btn_save')}</button></div>
             </form>
           </DialogContent>
         </Dialog>
@@ -121,12 +258,21 @@ export default function ProjectsPage() {
                   <FolderKanban className="w-6 h-6" />
                 </div>
                 <div className={p.status === 'active' ? "text-xs font-bold px-3 py-1 bg-green-500/10 text-green-500 rounded-full" : "text-xs font-bold px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full"}>
-                  {p.status === 'active' ? 'АКТИВЕН' : 'АРХИВ'}
+                  {p.status === 'active' ? t('status_active') : t('status_archive')}
                 </div>
               </div>
               
               <h3 className="text-xl font-bold mb-2 pr-8">{p.name}</h3>
-              <p className="text-[var(--neu-text-muted)] text-sm mb-6 line-clamp-3 flex-1">{p.description || "Нет описания."}</p>
+              <p className="text-[var(--neu-text-muted)] text-sm mb-4 line-clamp-3 flex-1">{p.description || t('no_description')}</p>
+              
+              <div className="mb-4">
+                <Dialog>
+                  <DialogTrigger className="neu-button w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold">
+                    <ClipboardList className="w-4 h-4 text-[var(--neu-accent)]" /> {t('tasks')}
+                  </DialogTrigger>
+                  <TaskModal projectId={p.id} projectName={p.name} />
+                </Dialog>
+              </div>
               
               {p.url && (
                 <div className="flex items-center gap-2 text-sm text-blue-400 mb-4 opacity-80 hover:opacity-100">
@@ -139,7 +285,7 @@ export default function ProjectsPage() {
                 <div className="mt-auto pt-4 border-t border-[var(--neu-text-muted)]/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Code2 className="w-4 h-4 text-[var(--neu-text-muted)]" />
-                    <span className="text-xs font-semibold text-[var(--neu-text-muted)] uppercase tracking-wider">Стек</span>
+                    <span className="text-xs font-semibold text-[var(--neu-text-muted)] uppercase tracking-wider">{t('field_stack')}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {p.techStack.split(',').map((t: string) => t.trim()).filter(Boolean).map((tech: string, i: number) => (

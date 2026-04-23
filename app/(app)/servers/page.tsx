@@ -77,7 +77,7 @@ export default function ServersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
            <h1 className="text-3xl font-bold tracking-tight mb-2">{t('servers')}</h1>
-           <p className="text-[var(--neu-text-muted)]">Управление серверами и инстансами базы данных</p>
+           <p className="text-[var(--neu-text-muted)]">{t('manage_servers_desc')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger className="neu-button neu-button-accent px-6 py-3 shrink-0 flex items-center justify-center font-semibold text-sm">
@@ -85,44 +85,44 @@ export default function ServersPage() {
           </DialogTrigger>
           <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
             <DialogHeader><DialogTitle className="text-2xl font-bold">{t('create_server')}</DialogTitle></DialogHeader>
-            <form onSubmit={handleCreate} className="space-y-6 pt-4">
+            <form onSubmit={handleCreate} className="space-y-6 pt-4 pb-12 sm:pb-4">
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Название</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_name')}</label>
                    <input required value={name} onChange={e=>setName(e.target.value)} className="neu-input w-full" placeholder="Frontend Node 1" />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">IPv4 / Точка доступа</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_host')}</label>
                    <input required value={ipAddress} onChange={e=>setIp(e.target.value)} className="neu-input w-full font-mono text-sm" placeholder="192.168.1.1" />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Провайдер</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_provider')}</label>
                    <input value={provider} onChange={e=>setProvider(e.target.value)} className="neu-input w-full" placeholder="AWS / DigitalOcean..." />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Операционная система</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_os')}</label>
                    <input value={os} onChange={e=>setOs(e.target.value)} className="neu-input w-full" placeholder="Ubuntu 22.04 LTS" />
                  </div>
                </div>
                
                <div className="space-y-2">
-                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Привязанный проект</label>
+                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_project')}</label>
                  <select 
                     value={projectId} 
                     onChange={(e) => setProjectId(e.target.value)}
                     className="neu-input w-full appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-[var(--neu-bg)]">Без проекта</option>
+                    <option value="" className="bg-[var(--neu-bg)]">{t('status_no_project')}</option>
                     {projects.map(p => <option key={p.id} value={p.id} className="bg-[var(--neu-bg)]">{p.name}</option>)}
                  </select>
                </div>
                
                <div className="space-y-2">
-                  <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Заметки</label>
-                  <textarea value={notes} onChange={e=>setNotes(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder="Дополнительная информация о сервере..." />
+                  <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_notes')}</label>
+                  <textarea value={notes} onChange={e=>setNotes(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder={t('placeholder_notes')} />
                </div>
 
-              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">Сохранить</button></div>
+              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">{t('btn_save')}</button></div>
             </form>
           </DialogContent>
         </Dialog>
@@ -133,7 +133,7 @@ export default function ServersPage() {
            {servers.length === 0 && (
               <div className="neu-panel p-12 text-center text-[var(--neu-text-muted)]">
                  <ServerIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                 <p>У вас еще нет серверов</p>
+                 <p>{t('no_servers')}</p>
               </div>
            )}
            {servers.map((s) => {
@@ -170,19 +170,19 @@ export default function ServersPage() {
                  <div className="flex items-center gap-4 sm:gap-6 w-full lg:w-auto mt-4 lg:mt-0 justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-white/5">
                     {project && (
                        <div className="hidden md:flex flex-col text-right">
-                          <span className="text-[10px] uppercase font-bold text-[var(--neu-text-muted)] tracking-wider">Проект</span>
+                          <span className="text-[10px] uppercase font-bold text-[var(--neu-text-muted)] tracking-wider">{t('field_project')}</span>
                           <span className="text-sm font-medium opacity-90">{project.name}</span>
                        </div>
                     )}
                     
                     <div className="flex gap-2">
-                       <button className="neu-button h-10 w-10 text-blue-400" title="Скопировать IP" onClick={() => {
+                       <button className="neu-button h-10 w-10 text-blue-400" title={t('copy_ip')} onClick={() => {
                           navigator.clipboard.writeText(s.ipAddress);
-                          toast.success("IP скопирован в буфер");
+                          toast.success(t('toast_ip_copied'));
                        }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                        </button>
-                       <button className="neu-button h-10 w-10 text-blue-500" title="Поделиться">
+                       <button className="neu-button h-10 w-10 text-blue-500" title={t('share')}>
                           <Share2 className="w-4 h-4" />
                        </button>
                        <button className="neu-button h-10 w-10 text-red-500" onClick={() => handleDelete(s.id)}>

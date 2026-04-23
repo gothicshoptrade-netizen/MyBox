@@ -62,7 +62,7 @@ export default function ShareLinksPage() {
     <div className="space-y-8 max-w-7xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight mb-2">{t('share_links')}</h1>
-        <p className="text-[var(--neu-text-muted)]">Управление публичными ссылками на вашу инфрастуктуру.</p>
+        <p className="text-[var(--neu-text-muted)]">{t('manage_links_desc')}</p>
       </div>
 
       {loading ? <p className="opacity-50">{t('loading')}</p> : (
@@ -70,7 +70,7 @@ export default function ShareLinksPage() {
            {links.length === 0 && (
               <div className="neu-panel p-12 text-center text-[var(--neu-text-muted)]">
                  <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                 <p>У вас еще нет публичных ссылок</p>
+                 <p>{t('no_share_links')}</p>
               </div>
            )}
            {links.map((l) => {

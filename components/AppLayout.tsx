@@ -11,6 +11,8 @@ import { useState, useEffect } from 'react';
 import { Input } from './ui/input';
 
 import { Paywall } from './Paywall';
+import { LoadingScreen } from './ui/LoadingScreen';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, isPaywall, login, logout } = useAuth();
@@ -19,6 +21,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const pathname = usePathname();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  useEffect(() => {
+    setIsNavigating(true);
+    const timer = setTimeout(() => setIsNavigating(false), 400);
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   useEffect(() => {
     const isDarkMode = localStorage.getItem('theme') === 'dark' || 
@@ -44,17 +53,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  if (!mounted) {
-    return <div className="min-h-screen bg-[var(--neu-bg)]" />;
-  }
-
-  // If loading auth state
-  if (loading) {
-    return (
-      <div className="flex bg-[var(--neu-bg)] h-screen w-full items-center justify-center">
-        <p className="text-[var(--neu-text-muted)] font-medium animate-pulse">{t('loading')}</p>
-      </div>
-    );
+  if (!mounted || loading) {
+    return <LoadingScreen />;
   }
 
   // If public route like /share/:token, we don't force login or show sidebar.
@@ -75,10 +75,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <h1 className="text-3xl font-bold tracking-wide mb-3">IT-Box</h1>
           <p className="text-[var(--neu-text-muted)] font-medium mb-10 leading-relaxed text-sm lg:text-base">
-            Единый сейф для вашей инфраструктуры. Серверы, сервисы, доступы AES-256-GCM.
+            {t('login_subtitle')}
           </p>
           <button onClick={login} className="neu-button font-bold text-base w-full py-4 bg-[var(--neu-accent)] text-white shadow-none hover:opacity-90 transition-opacity">
-            Войти через Google
+            {t('login')}
           </button>
         </div>
       </div>
@@ -104,21 +104,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--neu-bg)] text-[var(--neu-text)]">
+      {/* Top progress bar for navigation feedback */}
+      <AnimatePresence>
+        {isNavigating && (
+          <motion.div 
+            initial={{ width: 0, opacity: 1 }}
+            animate={{ width: '100%', opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed top-0 left-0 right-0 h-1 bg-[var(--neu-accent)] z-[100] shadow-[0_0_10px_var(--neu-accent)]"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar Desktop */}
       <aside className="hidden w-72 flex-col neu-panel m-4 mr-0 rounded-3xl md:flex shrink-0">
-        <div className="flex h-20 items-center px-8">
-          <Link href="/" className="flex items-center gap-3 font-semibold">
-            <div className="neu-panel-inset p-2 rounded-full text-blue-400">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div>
-               <span className="text-xl font-bold tracking-wide">IT-Box</span>
-               <span className="block text-[10px] text-[var(--neu-text-muted)] font-normal tracking-wide mt-0.5 capitalize-first">Сейф для инфраструктуры</span>
-            </div>
-          </Link>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto px-4 py-8 scrollbar-hide">
           <nav className="grid gap-2 items-start font-medium text-[15px]">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -140,21 +141,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <Link href="/about" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-               О продукте
+               {t('about')}
             </Link>
             <Link href="/faq" className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all duration-300", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "text-[var(--neu-text)] opacity-60 hover:opacity-100")}>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-               FAQ
+               {t('faq')}
             </Link>
           </nav>
         </div>
         
         <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70">
-           <p className="font-semibold text-[13px] mb-1">Менеджер IT-активов</p>
+           <p className="font-semibold text-[13px] mb-1">{t('it_asset_manager')}</p>
            <p>v1.0.0</p>
            <p className="mt-4 mb-2">© 2026 IT-Box<br/>
-           <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a></p>
-           <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">Политика конфиденциальности</a></p>
+           <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a><br/>
+           <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
+           <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">{t('privacy_policy')}</a></p>
         </div>
       </aside>
 
@@ -165,12 +167,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Button variant="outline" size="icon" className="neu-button h-10 w-10 border-0 bg-transparent shrink-0" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <div className="neu-panel-inset p-1.5 rounded-full text-blue-400">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <span className="text-lg font-bold tracking-wide">IT-Box</span>
-            </Link>
           </div>
           
           <div className="flex-1 md:hidden"></div>
@@ -220,10 +216,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 flex md:hidden">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-            <aside className="relative flex w-72 flex-col neu-panel m-4 rounded-3xl h-[calc(100vh-2rem)]">
-               <div className="flex h-20 items-center px-8 border-b border-white/5">
-                 <span className="text-xl font-bold tracking-wide">IT-Box</span>
-               </div>
+            <aside className="relative flex w-72 flex-col neu-panel m-4 rounded-3xl h-[calc(100vh-2rem)] pt-6">
                <nav className="flex-1 p-4 text-sm font-medium gap-2 overflow-y-auto flex flex-col">
                  {navItems.map((item) => (
                     <Link
@@ -244,19 +237,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   
                   <Link href="/about" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/about" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0-2.5z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                     О продукте
+                     {t('about')}
                   </Link>
                   <Link href="/faq" onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-4 rounded-xl px-4 py-3.5 transition-all text-[15px]", pathname === "/faq" ? "neu-panel text-[var(--neu-accent)] border-l-4 border-[var(--neu-accent)]" : "hover:text-[var(--neu-accent)] opacity-80")}>
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                     FAQ
+                     {t('faq')}
                   </Link>
                </nav>
                <div className="p-6 text-xs text-[var(--neu-text-muted)] opacity-70 border-t border-[var(--neu-border)]/5">
-                 <p className="font-semibold text-[13px] mb-1">Менеджер IT-активов</p>
+                 <p className="font-semibold text-[13px] mb-1">{t('it_asset_manager')}</p>
                  <p>v1.0.0</p>
                  <p className="mt-4 mb-2">© 2026 IT-Box<br/>
-                 <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a></p>
-                 <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">Политика конфиденциальности</a></p>
+                 <a href="mailto:info@premiumwebsite.ru" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">info@premiumwebsite.ru</a><br/>
+                 <a href="https://t.me/usefulbots2026_bot" target="_blank" className="hover:text-[var(--neu-accent)] transition-colors inline-block mt-1">@usefulbots2026_bot</a></p>
+                 <p className="mt-2"><a href="#" className="hover:text-[var(--neu-accent)] transition-colors">{t('privacy_policy')}</a></p>
               </div>
             </aside>
           </div>
@@ -264,7 +258,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Main scrollable area */}
         <main className="flex-1 overflow-y-auto p-4 pt-4 md:p-8 lg:p-12 pb-24">
-          {children}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="h-full"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

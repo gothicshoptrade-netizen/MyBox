@@ -2,8 +2,9 @@
 
 import { HelpCircle } from "lucide-react";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 
-const faqs = [
+const faqs_ru = [
   {
     q: "Что такое IT-Box?",
     a: "IT-Box — это централизованный сейф для хранения информации о ваших серверах, проектах, микросервисах и аутентификационных данных."
@@ -26,7 +27,33 @@ const faqs = [
   }
 ];
 
+const faqs_en = [
+  {
+    q: "What is IT-Box?",
+    a: "IT-Box is a centralized vault for storing information about your servers, projects, microservices, and authentication data."
+  },
+  {
+    q: "Where are my passwords stored?",
+    a: "All data is securely stored in a protected database. Passwords, private keys, and other critical secrets are encrypted on the server using the AES-256-GCM algorithm."
+  },
+  {
+    q: "Can I share access with a contractor?",
+    a: "Yes, you can generate a temporary link with a specific timer and view counter to securely transfer necessary access to external contractors. Passwords are not included in the link."
+  },
+  {
+    q: "How do I restore access?",
+    a: "Authorization happens through your linked Google Account. No separate master password, which could be lost or forgotten, is required in the system."
+  },
+  {
+    q: "Is it safe to use the system?",
+    a: "Yes, we use strict Firebase Security Rules (zero trust). Passwords are hidden by default, and their decryption occurs only upon explicit request through a secure API."
+  }
+];
+
 export default function FAQPage() {
+  const { t, i18n } = useTranslation();
+  const faqs = i18n.language === 'en' ? faqs_en : faqs_ru;
+
   return (
     <div className="mx-auto max-w-4xl space-y-12 pb-10">
       {/* Header section */}
@@ -40,18 +67,24 @@ export default function FAQPage() {
              <HelpCircle className="h-8 w-8" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-[var(--neu-text)]">FAQ</h1>
-            <p className="text-[var(--neu-text-muted)] text-sm uppercase tracking-widest mt-1">Ответы на вопросы</p>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-[var(--neu-text)]">{t('faq')}</h1>
+            <p className="text-[var(--neu-text-muted)] text-sm uppercase tracking-widest mt-1">
+              {i18n.language === 'en' ? "Questions & Answers" : "Ответы на вопросы"}
+            </p>
           </div>
         </div>
         <p className="text-[var(--neu-text-muted)] leading-relaxed text-base md:text-lg">
-          Здесь собраны ответы на самые частые вопросы о возможностях, безопасности и устройстве платформы IT-Box.
+          {i18n.language === 'en' 
+            ? "Here are answers to the most common questions about the features, security, and architecture of the IT-Box platform." 
+            : "Здесь собраны ответы на самые частые вопросы о возможностях, безопасности и устройстве платформы IT-Box."}
         </p>
       </motion.div>
 
       {/* FAQ Items */}
       <div className="space-y-6">
-        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-[var(--neu-text)] px-2">Вопросы и ответы</h2>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-[var(--neu-text)] px-2">
+          {i18n.language === 'en' ? "Q&A" : "Вопросы и ответы"}
+        </h2>
         <div className="grid gap-6">
           {faqs.map((faq, index) => (
             <motion.div 

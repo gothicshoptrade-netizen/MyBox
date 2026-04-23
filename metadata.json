@@ -1,6 +1,6 @@
 {
-  "name": "MyServersHub",
-  "description": "Modern neomorphic server management hub with Google Auth.",
+  "name": "IT-Box | Asset Manager",
+  "description": "Unified vault for your infrastructure. Servers, services, credentials AES-256-GCM.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

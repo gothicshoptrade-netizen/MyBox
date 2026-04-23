@@ -76,49 +76,49 @@ export default function ServicesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
            <h1 className="text-3xl font-bold tracking-tight mb-2">{t('services')}</h1>
-           <p className="text-[var(--neu-text-muted)]">Управление сервисами, сайтами и приложениями</p>
+           <p className="text-[var(--neu-text-muted)]">{t('manage_services_desc')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger className="neu-button neu-button-accent px-6 py-3 shrink-0 flex items-center font-semibold text-sm">
-             <Plus className="w-4 h-4 mr-2"/> Добавить сервис
+             <Plus className="w-4 h-4 mr-2"/> {t('add_service')}
           </DialogTrigger>
           <DialogContent className="border-0 sm:rounded-3xl p-8 max-w-2xl" style={{ background: 'var(--neu-bg)', boxShadow: 'var(--neu-shadow)', color: 'var(--neu-text)' }}>
-            <DialogHeader><DialogTitle className="text-2xl font-bold">Добавить сервис</DialogTitle></DialogHeader>
-            <form onSubmit={handleCreate} className="space-y-6 pt-4">
+            <DialogHeader><DialogTitle className="text-2xl font-bold">{t('add_service')}</DialogTitle></DialogHeader>
+            <form onSubmit={handleCreate} className="space-y-6 pt-4 pb-12 sm:pb-4">
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Название</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_name')}</label>
                    <input required value={name} onChange={e=>setName(e.target.value)} className="neu-input w-full" placeholder="API Gateway" />
                  </div>
                  <div className="space-y-2">
-                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Порт</label>
+                   <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_port')}</label>
                    <input value={port} onChange={e=>setPort(e.target.value)} className="neu-input w-full font-mono text-sm" placeholder="443" />
                  </div>
                </div>
 
                <div className="space-y-2">
-                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">URL / Домен</label>
+                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_url')}</label>
                  <input value={url} onChange={e=>setUrl(e.target.value)} className="neu-input w-full" placeholder="https://api.example.com" />
                </div>
                
                <div className="space-y-2">
-                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Привязанный сервер</label>
+                 <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_server')}</label>
                  <select 
                     value={serverId} 
                     onChange={(e) => setServerId(e.target.value)}
                     className="neu-input w-full appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-[var(--neu-bg)]">Без сервера</option>
+                    <option value="" className="bg-[var(--neu-bg)]">{t('status_no_server')}</option>
                     {servers.map(s => <option key={s.id} value={s.id} className="bg-[var(--neu-bg)]">{s.name} ({s.ipAddress})</option>)}
                  </select>
                </div>
                
                <div className="space-y-2">
-                  <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">Заметки</label>
-                  <textarea value={notes} onChange={e=>setNotes(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder="Дополнительная информация о сервисе..." />
+                  <label className="text-sm font-semibold tracking-wide ml-2 uppercase text-[var(--neu-text-muted)]">{t('field_notes')}</label>
+                  <textarea value={notes} onChange={e=>setNotes(e.target.value)} className="neu-input w-full min-h-[100px] resize-none" placeholder={t('placeholder_notes')} />
                </div>
 
-              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">Сохранить</button></div>
+              <div className="flex justify-end pt-4"><button type="submit" className="neu-button neu-button-accent px-8 py-3">{t('btn_save')}</button></div>
             </form>
           </DialogContent>
         </Dialog>
@@ -129,7 +129,7 @@ export default function ServicesPage() {
            {services.length === 0 && (
               <div className="neu-panel p-12 text-center text-[var(--neu-text-muted)] col-span-full">
                  <Network className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                 <p>У вас еще нет добавленных сервисов</p>
+                 <p>{t('no_services')}</p>
               </div>
            )}
            {services.map((s) => {
@@ -142,7 +142,7 @@ export default function ServicesPage() {
                     </div>
                     
                     <div className="flex gap-2">
-                       <button className="neu-button h-8 w-8 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Поделиться">
+                       <button className="neu-button h-8 w-8 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" title={t('share')}>
                           <Share2 className="w-4 h-4" />
                        </button>
                        <button className="neu-button h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(s.id)}>
@@ -166,13 +166,13 @@ export default function ServicesPage() {
                  <div className="mt-auto pt-4 border-t border-white/5 space-y-2">
                     {s.port && (
                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-[var(--neu-text-muted)]">Порт:</span>
+                          <span className="text-[var(--neu-text-muted)]">{t('field_port')}:</span>
                           <span className="font-mono bg-[var(--neu-bg)] px-2 py-0.5 rounded shadow-[var(--neu-shadow-inset)]">{s.port}</span>
                        </div>
                     )}
                     {server && (
                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-[var(--neu-text-muted)]">Сервер:</span>
+                          <span className="text-[var(--neu-text-muted)]">{t('field_server')}:</span>
                           <span className="opacity-90 max-w-[150px] truncate" title={server.name}>{server.name}</span>
                        </div>
                     )}
